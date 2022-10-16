@@ -4,27 +4,26 @@
 
 if roundstate = 0 { 
 
-# intro_bgm_r1 controls the background music while the intros play on round one: 0 to mute it, and 1 to keep it on. Default is 0. 
-# intro_bgm_tm controls the background music when a new character jumps in on turns mode: 0 to mute it, and 1 to keep it on. Default is 0.
+# intro_bgm_r1 controls the background music while the intros play on round one: 0 to mute it, and 1 to keep it on. Default is 1. 
+# intro_bgm_tm controls the background music when a new character jumps in on turns mode: 0 to mute it, and 1 to keep it on. Default is 1.
 
 	mapSet{map: "intro_bgm_r1"; value: 1}
 	mapSet{map: "intro_bgm_tm"; value: 1}
 	
-# "intro_hud_r1" controls the lifebars before the fights starts on round one: 0 to hide them, and 1 to keep them on. Default is 0
-# "intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 0 to hide them, and 1 to keep them on. Default is 0.
+# "intro_hud_r1" controls the lifebars before the fights starts on round one: 0 to hide them, and 1 to keep them on. Default is 1.
+# "intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 0 to hide them, and 1 to keep them on. Default is 1.
 
 	mapSet{map: "intro_hud_r1"; value: 1}
 	mapSet{map: "intro_hud_rx"; value: 1}	
 
-# "ko_bgm" controls the background music immediately after a character is KO'd: 0 to mute it, and 1 to keep it on. Default is 0.
-# "ko_hud" controls the lifebars immediately after a character is KO'd: 0 to hide them, and 1 to keep them on. Default is 0
-# Note that if playing on simul and tag modes this will only trigger when a team loses a round, not on individual KOs.
+# "ko_bgm" controls the background music immediately after a character is KO'd: 0 to mute it, and 1 to keep it on. Default is 1.
+# "ko_hud" controls the lifebars immediately after a character is KO'd: 0 to hide them, and 1 to keep them on. Default is 1.
 
 	mapSet{map: "ko_bgm"; value: 1}	
 	mapSet{map: "ko_hud"; value: 1}
 	
-# "win_bgm" controls the background music during winposes: 0 to mute it, and 1 to keep it on. Default is 0.
-# "win_hud" controls the lifebars during winposes: 0 to hide them, and 1 to keep them on. Default is 0
+# "win_bgm" controls the background music during winposes: 0 to mute it, and 1 to keep it on. Default is 1.
+# "win_hud" controls the lifebars during winposes: 0 to hide them, and 1 to keep them on. Default is 1.
 
 	mapSet{map: "win_bgm"; value: 1}	
 	mapSet{map: "win_hud"; value: 1}
