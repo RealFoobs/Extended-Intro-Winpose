@@ -4,7 +4,7 @@
 
 **To install**
 
-1. Drop `intro-outro.zss` in your `data\` folder.
+1. Drop `intro-outro.zss` and `intro-outro-config.zss` in your `data\` folder.
 2. Go to `save\` and open `config.json`
 3. Near the beginning of the file you should see a block like this:
 
@@ -28,9 +28,10 @@ You just need to add the line `"data/intro-outro.zss"`so the engine can read the
 		"data/score.zss",
 		"data/tag.zss",
 		"data/intro-outro.zss",
+		"data/intro-outro-config.zss",
 		"data/training.zss"
 	],
   ```
   The order isn't very relevant, just make sure to include a comma if it is NOT the last the last line on the block, and to ommit it if it isn't.
   
-  4. Go back to `data\` and open `intro-outro.zss`, if windows does not recognize the file extension open it with any text editor (I'd recommend Notepad++) and read the specific instructions as to what each feature does and how to enable it.
+  4. Go back to `data\` and open `intro-outro-config.zss`, if windows does not recognize the file extension open it with any text editor (I'd recommend Notepad++) and read the specific instructions as to what each feature does and how to enable it.
