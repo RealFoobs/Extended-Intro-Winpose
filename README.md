@@ -18,7 +18,7 @@
 		"data/training.zss"
 	],
 ```
-You just need to add the line `"data/intro-outro.zss"`so the engine can read the file.
+You just need to add `"data/intro-outro.zss"` and `"data/intro-outro-config.zss"` so the engine can read the files.
 
 ```
 	"CommonStates": [
@@ -32,6 +32,6 @@ You just need to add the line `"data/intro-outro.zss"`so the engine can read the
 		"data/training.zss"
 	],
   ```
-  The order isn't very relevant, just make sure to include a comma if it is NOT the last the last line on the block, and to ommit it if it isn't.
+  The order isn't very relevant, just make sure to include a comma if either file is NOT the last the last line on the block, and to ommit it if it isn't.
   
   4. Go back to `data\` and open `intro-outro-config.zss`, if windows does not recognize the file extension open it with any text editor (I'd recommend Notepad++) and read the specific instructions as to what each feature does and how to enable it.
