@@ -1,76 +1,135 @@
-# Read the description on each line with a "#" symbol, it'll explain the function of the item below it. The only part you may want to change is the number after "value: " 
-
 [Statedef -2]
 
-if roundstate = 0 { 
-
-# intro_bgm_r1 controls the background music while the intros play on round one: 0 to mute it, and 1 to keep it on. Default is 1. 
-# intro_bgm_tm controls the background music when a new character jumps in on turns mode: 0 to mute it, and 1 to keep it on. Default is 1.
-
-	mapSet{map: "intro_bgm_r1"; value: 1}
-	mapSet{map: "intro_bgm_tm"; value: 1}
+	# Sets up some failsafes to break down the moment a character is KO'd from the winposes.	
+	# This is redundant and bad, must remove once the main Ikemen repository is fixed.
 	
-# "intro_hud_r1" controls the lifebars before the fights starts on round one: 0 to hide them, and 1 to keep them on. Default is 1.
-# "intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 0 to hide them, and 1 to keep them on. Default is 1.
-
-	mapSet{map: "intro_hud_r1"; value: 1}
-	mapSet{map: "intro_hud_rx"; value: 1}	
-
-# "ko_bgm" controls the background music immediately after a character is KO'd: 0 to mute it, and 1 to keep it on. Default is 1.
-# "ko_hud" controls the lifebars immediately after a character is KO'd: 0 to hide them, and 1 to keep them on. Default is 1.
-
-	mapSet{map: "ko_bgm"; value: 1}	
-	mapSet{map: "ko_hud"; value: 1}
-	
-# "win_bgm" controls the background music during winposes: 0 to mute it, and 1 to keep it on. Default is 1.
-# "win_hud" controls the lifebars during winposes: 0 to hide them, and 1 to keep them on. Default is 1.
-
-	mapSet{map: "win_bgm"; value: 1}	
-	mapSet{map: "win_hud"; value: 1}
+if roundstate <= 5 {
+	mapSet{map: "temp1"; value: 0}
+	mapSet{map: "temp2"; value: 0}
 	}
 
-#======================================================================================================================================
-# Don't change anything from here onwards.
-#======================================================================================================================================
-
-	# Mutes the music during round one
-if (roundstate < 2) && !map(intro_bgm_r1) && (roundno = 1) {
+	# Tells if a character has been KO'd.
+	
+if roundstate = 3 {
+	mapSet{map: "temp1"; value: 1}
+	}
+	
+	# Tells if a winpose should start.
+	
+if roundstate = 4 {
+	mapSet{map: "temp2"; value: 1}
+	}
+	
+	# Records the gametime as soon as a character has been KO'd.
+	
+if roundstate < 3 {	
+	mapSet{map: "temp3"; value: gametime}
+	}
+	
+	# Mutes the music during round one.
+	
+if roundstate < 2 && map(io_intro_bgm_r1) && roundno = 1 {
 	assertSpecial{flag:nomusic}
 	}
 	
-	# Hides the lifebars on round one
-if (roundstate < 2) && !map(intro_hud_r1) && (roundno = 1) {
+	# Hides the lifebars on round one.
+	
+if roundstate < 2 && map(io_intro_hud_r1) && roundno = 1 {
 	assertSpecial{flag:nobardisplay}
 	}
 
-	# Hides lifebars on round two onwards
-if (roundstate < 2) && !map(intro_hud_rx) && (roundno > 1) {
+	# Hides lifebars on round two onwards.
+	
+if roundstate < 2 && map(io_intro_hud_rx) && roundno > 1 {
 	assertSpecial{flag:nobardisplay}
 	}
 
-	# Mutes the music during intros on turns mode
-if (roundstate < 2) && !map(intro_bgm_tm) && (roundno > 1) && (teammode = turns) && (stateno != 0) {
+	# Mutes the music during intros on turns mode.
+	
+if roundstate < 2 && map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && stateno != 0 {
 	assertSpecial{flag:nomusic}
 	}
-
+	
 [Statedef -3]
+	
+	# Centers camera on the winner during winposes.
+	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
+	
+Ignorehitpause if map(io_win_cam) = 1 && roundstate = 4 && camerazoom <= 1 && alive {
+	zoom{scale:gamewidth/320.0; lag:0.95; pos:(pos x)/(gamewidth/320.0)*camerazoom, 0}
+	}
+	
+	# Centers camera on the loser during winposes.
+	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
+	
+Ignorehitpause if map(io_win_cam) = 2 && roundstate = 4 && camerazoom <= 1 && !alive {
+	zoom{scale:gamewidth/320.0; lag:0.95; pos:(pos x)/(gamewidth/320.0)*camerazoom, 0}
+	}
 
-	# Mutes the music during KOs
-Ignorehitpause if !map(ko_bgm) && (roundstate = 3){
+
+[Statedef -4]
+	
+	# Removes the slomo effect on KO.
+	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	
+Ignorehitpause if map(io_ko_slo) && map(temp1){
+	assertSpecial{flag:nokoslow}
+	}
+	
+	# Controls the white and red flashes during a special ko.
+	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	
+Ignorehitpause if map(io_ko_spc) && map(temp1) && winspecial && gametime < (map(temp3)+60) {
+	if (map(temp3)+5) >= gametime {
+		envcolor{value:0,0,0; time:1; under:1}
+		}
+			else if gametime % 14 < 7 {
+				envcolor{value:255,0,0; time:1; under:1}
+				}
+				else {
+					envcolor{value:255,255,255; time:1; under:1}
+					}
+	}
+
+	# Controls the white and red flashes during a super ko.
+	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	
+Ignorehitpause if map(io_ko_spc) && map(temp1) && winhyper && gametime < (map(temp3)+60) {
+	if (map(temp3)+5) >= gametime {
+		envcolor{value:0,0,0; time:1; under:1}
+		}
+			else if gametime % 14 < 7 {
+				envcolor{value:255,0,0; time:1; under:1}
+				}
+				else {
+					envcolor{value:255,255,255; time:1; under:1}
+					}
+	}
+	
+	# Mutes the music during KOs.
+	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	
+Ignorehitpause if map(io_ko_bgm) && map(temp1) {
 	assertSpecial{flag:nomusic}
 	}
 
-	# Hides the lifebars during KOs	
-Ignorehitpause if !map(ko_hud) && (roundstate = 3){
+	# Hides the lifebars during KOs.
+	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	
+Ignorehitpause if map(io_ko_hud) && map(temp1) {
 	assertSpecial{flag:nobardisplay}
 	}
 
-	# Mutes the music during winposes
-Ignorehitpause if !map(win_bgm) && (roundstate = 4){
+	# Mutes the music during winposes.
+	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
+	
+Ignorehitpause if map(io_win_bgm) && map(temp2) {
 	assertSpecial{flag:nomusic}
 	}
 	
-	# Hides the lifebars during winposes
-Ignorehitpause if !map(win_hud) && (roundstate = 4){
+	# Hides the lifebars during winposes.
+	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
+	
+Ignorehitpause if map(io_win_hud) && map(temp2) {
 	assertSpecial{flag:nobardisplay}
 	}
