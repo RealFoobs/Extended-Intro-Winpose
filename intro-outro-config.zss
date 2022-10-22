@@ -1,0 +1,58 @@
+# Read the description on each line with a "#" symbol, it'll explain the function of the item below it. The only part you may want to change is the number after "value: ".
+
+# If you want to override the global behavior for any specific character, copy the following on its .def file (minus the # symbols)
+# [Map]
+# ignore_io = 1
+# This will turn all the switches off. 
+
+# If you want to re-enable any of the features, copy its name = 1 on the same section of the def; e.g.:
+# [Map]
+# ignore_io = 1
+# io_intro_bgm_tm = 1
+
+[Statedef -2]
+
+if roundstate = 0 && !map(ignore_io) { 
+
+# io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
+# io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
+
+	mapSet{map: "io_intro_bgm_r1"; value: 0}
+	mapSet{map: "io_intro_bgm_tm"; value: 0}
+	
+# "io_intro_hud_r1" controls the lifebars before the fights starts on round one: 1 to hide them, and 0 to keep them on.
+# "io_intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 1 to hide them, and 0 to keep them on.
+
+	mapSet{map: "io_intro_hud_r1"; value: 0}
+	mapSet{map: "io_intro_hud_rx"; value: 0}	
+
+# "io_ko_slo" controls the default slow motion effect during KO: 1 to remove it, 0 to keep it on. 
+	
+	mapSet{map: "io_ko_slo"; value: 0}
+	
+# "io_ko_spc" controls the white/red flashing background when the finishing blow is a special attack: 1 to enable it, and 0 to disable it.
+# "io_ko_sup" controls the white/red flashing background when the finishing blow is a special attack: 1 to enable it, and 0 to disable it.
+# If you suffer from seizures, you should keep these at 0.
+	
+	mapSet{map: "io_ko_spc"; value: 0}
+	mapSet{map: "io_ko_sup"; value: 0}
+
+# "io_ko_bgm" controls the background music immediately after a character is KO'd: 1 to mute it, and 0 to keep it on.
+# "io_ko_hud" controls the lifebars immediately after a character is KO'd: 1 to hide them, and 0 to keep them on.
+
+	mapSet{map: "io_ko_bgm"; value: 0}	
+	mapSet{map: "io_ko_hud"; value: 0}
+	
+# "io_win_bgm" controls the background music during winposes: 1 to mute it, and 0 to keep it on.
+# "io_win_hud" controls the lifebars during winposes: 1 to hide them, and 0 to keep them on.
+
+	mapSet{map: "io_win_bgm"; value: 0}	
+	mapSet{map: "io_win_hud"; value: 0}
+
+# "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
+	mapSet{map: "io_win_cam"; value: 0}
+	}
+
+#======================================================================================================================================
+# Don't change anything from here onwards.
+#======================================================================================================================================
