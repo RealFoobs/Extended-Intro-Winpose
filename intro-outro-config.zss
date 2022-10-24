@@ -12,8 +12,12 @@
 
 [Statedef -2]
 
-if roundstate = 0 && !map(ignore_io) { 
+if roundstate = 0 && !map(ignore_io) {
 
+# io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
+
+	mapSet{map: "io_intro_skip"; value: 0}
+	
 # io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
 # io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
 
@@ -48,11 +52,11 @@ if roundstate = 0 && !map(ignore_io) {
 
 	mapSet{map: "io_win_bgm"; value: 0}	
 	mapSet{map: "io_win_hud"; value: 0}
+	
+# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
+
+	mapSet{map: "io_win_skip"; value: 0}
 
 # "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
 	mapSet{map: "io_win_cam"; value: 0}
 	}
-
-#======================================================================================================================================
-# Don't change anything from here onwards.
-#======================================================================================================================================
