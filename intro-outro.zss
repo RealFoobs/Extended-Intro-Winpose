@@ -94,7 +94,7 @@ Ignorehitpause if map(io_ko_spc) && map(temp1) && winspecial && gametime < (map(
 	# Controls the white and red flashes during a super ko.
 	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
 	
-Ignorehitpause if map(io_ko_spc) && map(temp1) && winhyper && gametime < (map(temp3)+60) {
+Ignorehitpause if map(io_ko_sup) && map(temp1) && winhyper && gametime < (map(temp3)+60) {
 	if (map(temp3)+5) >= gametime {
 		envcolor{value:0,0,0; time:1; under:1}
 		}
@@ -104,6 +104,20 @@ Ignorehitpause if map(io_ko_spc) && map(temp1) && winhyper && gametime < (map(te
 				else {
 					envcolor{value:255,255,255; time:1; under:1}
 					}
+	}
+	
+	# Makes intros un-skippable
+	# Change !map(temp2) for roundstate = 0 once the main repository is fixed.
+	
+Ignorehitpause if map(io_intro_skip) && !map(temp2) {
+	assertSpecial{flag:roundnotskip}
+	}
+
+	# Makes winposes un-skippable
+	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
+	
+Ignorehitpause if map(io_win_skip) && map(temp2) {
+	assertSpecial{flag:roundnotskip}
 	}
 	
 	# Mutes the music during KOs.
