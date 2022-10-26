@@ -12,12 +12,12 @@
 
 [Statedef -2]
 
-if roundstate = 0 && !map(ignore_io) {
+if !map(ignore_io) && roundstate = 0 {
 
 # io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
 	mapSet{map: "io_intro_skip"; value: 0}
-	
+
 # io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
 # io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
 
@@ -35,7 +35,7 @@ if roundstate = 0 && !map(ignore_io) {
 	mapSet{map: "io_ko_slo"; value: 0}
 	
 # "io_ko_spc" controls the white/red flashing background when the finishing blow is a special attack: 1 to enable it, and 0 to disable it.
-# "io_ko_sup" controls the white/red flashing background when the finishing blow is a special attack: 1 to enable it, and 0 to disable it.
+# "io_ko_sup" controls the white/red flashing background when the finishing blow is a super attack: 1 to enable it, and 0 to disable it.
 # If you suffer from seizures, you should keep these at 0.
 	
 	mapSet{map: "io_ko_spc"; value: 0}
@@ -46,17 +46,19 @@ if roundstate = 0 && !map(ignore_io) {
 
 	mapSet{map: "io_ko_bgm"; value: 0}	
 	mapSet{map: "io_ko_hud"; value: 0}
-	
+
 # "io_win_bgm" controls the background music during winposes: 1 to mute it, and 0 to keep it on.
 # "io_win_hud" controls the lifebars during winposes: 1 to hide them, and 0 to keep them on.
 
 	mapSet{map: "io_win_bgm"; value: 0}	
 	mapSet{map: "io_win_hud"; value: 0}
-	
+
 # io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
 	mapSet{map: "io_win_skip"; value: 0}
-
+	
 # "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
+
 	mapSet{map: "io_win_cam"; value: 0}
+	
 	}
