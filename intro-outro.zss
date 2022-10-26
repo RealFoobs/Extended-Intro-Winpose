@@ -1,7 +1,7 @@
 [Statedef -2]
 
 	# Sets up some failsafes to break down the moment a character is KO'd from the winposes.	
-	# This is redundant and bad, must remove once the main Ikemen repository is fixed.
+	# This is redundant and bad, must remove once the main Ikemen repository is fixed.	
 	
 if roundstate <= 5 {
 	mapSet{map: "temp1"; value: 0}
@@ -25,110 +25,93 @@ if roundstate = 4 {
 if roundstate < 3 {	
 	mapSet{map: "temp3"; value: gametime}
 	}
-	
+		
+if roundstate < 2 {
 	# Mutes the music during round one.
 	
-if roundstate < 2 && map(io_intro_bgm_r1) && roundno = 1 {
-	assertSpecial{flag:nomusic}
-	}
+	if map(io_intro_bgm_r1) && roundno = 1 {
+		assertSpecial{flag:nomusic}
+		}
 	
 	# Hides the lifebars on round one.
 	
-if roundstate < 2 && map(io_intro_hud_r1) && roundno = 1 {
-	assertSpecial{flag:nobardisplay}
-	}
+	if map(io_intro_hud_r1) && roundno = 1 {
+		assertSpecial{flag:nobardisplay}
+		}
 
 	# Hides lifebars on round two onwards.
 	
-if roundstate < 2 && map(io_intro_hud_rx) && roundno > 1 {
+	if map(io_intro_hud_rx) && roundno > 1 {
 	assertSpecial{flag:nobardisplay}
-	}
+		}
 
 	# Mutes the music during intros on turns mode.
 	
-if roundstate < 2 && map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && stateno != 0 {
-	assertSpecial{flag:nomusic}
+	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && stateno != 0 {
+		assertSpecial{flag:nomusic}
+		}
 	}
 	
 [Statedef -3]
 	
-	# Centers camera on the winner during winposes.
+	# Centers camera on the winner or loser  during winposes.
 	
-Ignorehitpause if map(io_win_cam) = 1 && roundstate = 4 && camerazoom <= 1 && alive {
+Ignorehitpause if ((map(io_win_cam) = 1 && alive) || (map(io_win_cam) = 2 && !alive)) && roundstate = 4 {
 	zoom{scale:gamewidth/320.0; lag:0.95; pos:(pos x)/(gamewidth/320.0)*camerazoom, 0}
 	}
 	
-	# Centers camera on the loser during winposes.
-	
-Ignorehitpause if map(io_win_cam) = 2 && roundstate = 4 && camerazoom <= 1 && !alive {
-	zoom{scale:gamewidth/320.0; lag:0.95; pos:(pos x)/(gamewidth/320.0)*camerazoom, 0}
-	}
-
-
 [Statedef -4]
 	
+	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	
+Ignorehitpause if map(temp1) && alive && teamleader < 3 {
+
 	# Removes the slomo effect on KO.
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
 	
-Ignorehitpause if map(io_ko_slo) && map(temp1){
-	assertSpecial{flag:nokoslow}
-	}
-		
-	# Controls the white and red flashes during a special ko, if ko slowdown has been turned off.
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
-	
-Ignorehitpause if map(io_ko_spc) && map(io_ko_slo) && map(temp1) && winspecial && gametime < (map(temp3)+60) {
-	if (map(temp3)+5) >= gametime {
-		envcolor{value:0,0,0; time:1; under:1}
+	if map(io_ko_slo) {
+		assertSpecial{flag:nokoslow}
 		}
-			else if gametime % 14 < 7 {
-				envcolor{value:255,0,0; time:1; under:1}
+	
+	# Controls the white and red flashes during a special or super ko, if ko slowdown has been turned off.
+	
+	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && map(io_ko_slo) && gametime < (map(temp3)+60) {
+			if (map(temp3)+5) >= gametime {
+				envcolor{value:0,0,0; time:1; under:1}
 				}
-				else {
-					envcolor{value:255,255,255; time:1; under:1}
-					}
-	}
+					else if gametime % 14 < 7 {
+						envcolor{value:255,0,0; time:1; under:1}
+						}
+						else {
+							envcolor{value:255,255,255; time:1; under:1}
+							}
+		}
 
-	# Controls the white and red flashes during a super ko, if ko slowdown has been turned off.
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	# Controls the white and red flashes during a special or super ko, if ko slowdown is still active.
 	
-Ignorehitpause if map(io_ko_sup) && map(io_ko_slo) && map(temp1) && winhyper && gametime < (map(temp3)+60) {
-	if (map(temp3)+5) >= gametime {
-		envcolor{value:0,0,0; time:1; under:1}
-		}
-			else if gametime % 14 < 7 {
-				envcolor{value:255,0,0; time:1; under:1}
+	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && !map(io_ko_slo) && gametime < (map(temp3)+17) {
+			if (map(temp3)+2) >= gametime {
+				envcolor{value:0,0,0; time:1; under:1}
 				}
-				else {
-					envcolor{value:255,255,255; time:1; under:1}
-					}
-	}
-
-	# Controls the white and red flashes during a special ko, if ko slowdown is still active.
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+					else if gametime % 4 < 2 {
+						envcolor{value:255,0,0; time:1; under:1}
+						}
+						else {
+							envcolor{value:255,255,255; time:1; under:1}
+							}
+		}
 	
-Ignorehitpause if map(io_ko_spc) && !map(io_ko_slo) && map(temp1) && winspecial && gametime < (map(temp3)+17) {
-	if (map(temp3)+2) >= gametime {
-		envcolor{value:0,0,0; time:1; under:1}
+	# Mutes the music during KOs.
+	
+	if map(io_ko_bgm) {
+		assertSpecial{flag:nomusic}
 		}
-			else if gametime % 4 < 2 {
-				envcolor{value:255,0,0; time:1; under:1}
-				}
-				else {
-					envcolor{value:255,255,255; time:1; under:1}
-					}
-	}
 
-Ignorehitpause if map(io_ko_sup) && !map(io_ko_slo) && map(temp1) && winhyper && gametime < (map(temp3)+17) {
-	if (map(temp3)+1) >= gametime {
-		envcolor{value:0,0,0; time:1; under:1}
+	# Hides the lifebars during KOs.
+	
+	if map(io_ko_hud) {
+		assertSpecial{flag:nobardisplay}
 		}
-			else if gametime % 4 < 2 {
-				envcolor{value:255,0,0; time:1; under:1}
-				}
-				else {
-					envcolor{value:255,255,255; time:1; under:1}
-					}
+	
 	}
 	
 	# Makes intros un-skippable
@@ -138,37 +121,26 @@ Ignorehitpause if map(io_intro_skip) && !map(temp2) {
 	assertSpecial{flag:roundnotskip}
 	}
 
-	# Makes winposes un-skippable
 	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
 	
-Ignorehitpause if map(io_win_skip) && map(temp2) {
-	assertSpecial{flag:roundnotskip}
-	}
-	
-	# Mutes the music during KOs.
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
-	
-Ignorehitpause if map(io_ko_bgm) && map(temp1) {
-	assertSpecial{flag:nomusic}
-	}
+Ignorehitpause if map(temp2) && alive && teamleader < 3 {
 
-	# Hides the lifebars during KOs.
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	# Makes winposes un-skippable
 	
-Ignorehitpause if map(io_ko_hud) && map(temp1) {
-	assertSpecial{flag:nobardisplay}
-	}
+	if map(io_win_skip) {
+		assertSpecial{flag:roundnotskip}
+		}
 
 	# Mutes the music during winposes.
-	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
 	
-Ignorehitpause if map(io_win_bgm) && map(temp2) {
-	assertSpecial{flag:nomusic}
-	}
+	if map(io_win_bgm) {
+		assertSpecial{flag:nomusic}
+		}
 	
 	# Hides the lifebars during winposes.
-	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
 	
-Ignorehitpause if map(io_win_hud) && map(temp2) {
-	assertSpecial{flag:nobardisplay}
-	}
+	if map(io_win_hud) {
+		assertSpecial{flag:nobardisplay}
+		}
+		
+	}	
