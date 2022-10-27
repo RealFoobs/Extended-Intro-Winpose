@@ -150,7 +150,7 @@ Ignorehitpause if map(temp2) && alive && teamleader < 3 {
 	# Plays a jingle during winposes.
 	
 	if map(io_win_fan) && !map(wintemp) {
-		playbgm{bgm:"data/breakers.wav";loop:0}
+		playbgm{bgm:"data/fanfare/breakers.wav";loop:0}
 		mapAdd{map:"wintemp"; value: 1}
 		}	
 
