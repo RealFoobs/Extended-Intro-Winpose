@@ -47,18 +47,23 @@ if !map(ignore_io) && roundstate = 0 {
 	mapSet{map: "io_ko_bgm"; value: 0}	
 	mapSet{map: "io_ko_hud"; value: 0}
 
+# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
+
+	mapSet{map: "io_win_skip"; value: 0}
+	
 # "io_win_bgm" controls the background music during winposes: 1 to mute it, and 0 to keep it on.
 # "io_win_hud" controls the lifebars during winposes: 1 to hide them, and 0 to keep them on.
 
 	mapSet{map: "io_win_bgm"; value: 0}	
 	mapSet{map: "io_win_hud"; value: 0}
-
-# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
-
-	mapSet{map: "io_win_skip"; value: 0}
 	
 # "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
 
 	mapSet{map: "io_win_cam"; value: 0}
+
+# "io_win_fan" can play a small fanfare at the end of the match: 1 to turn it on, to keep it off.
+# At the moment, the only sound available is Breaker's Revenge's win fanfare.
+
+	mapSet{map: "io_win_fan"; value: 0}
 	
 	}
