@@ -4,7 +4,7 @@
 
 **To install**
 
-1. Drop `intro-outro.zss` and `intro-outro-config.zss` in your `data\` folder.
+1. Drop the contents of the most recent release in your `data\` folder.
 2. Go to `save\` and open `config.json`
 3. Near the beginning of the file you should see a block like this:
 
