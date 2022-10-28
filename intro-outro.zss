@@ -61,8 +61,15 @@ if roundstate < 2 {
 	# Centers camera on the winner or loser  during winposes.
 	
 Ignorehitpause if ((map(io_win_cam) = 1 && alive) || (map(io_win_cam) = 2 && !alive)) && roundstate = 4 {
-	zoom{scale:gamewidth/320.0; lag:0.95; pos:(pos x)/(gamewidth/320.0)*camerazoom, 0}
+	zoom{scale:gamewidth/const240p(320.0); lag:0.95; pos:(pos x)/(gamewidth/const240p(320.0))*camerazoom, 0}
 	}
+	# Plays a jingle during winposes.
+	
+Ignorehitpause if map(io_win_fan) && !map(wintemp) && roundstate = 4 && alive && roundtype = 1 {
+	playbgm{bgm:"data/fanfare/breakers.wav";loop:0}
+	mapAdd{map:"wintemp"; value: 1}
+	}	
+
 	
 [Statedef -4]
 	
@@ -146,12 +153,5 @@ Ignorehitpause if map(temp2) && alive && teamleader < 3 {
 	if map(io_win_hud) {
 		assertSpecial{flag:nobardisplay}
 		}
-	
-	# Plays a jingle during winposes.
-	
-	if map(io_win_fan) && !map(wintemp) {
-		playbgm{bgm:"data/fanfare/breakers.wav";loop:0}
-		mapAdd{map:"wintemp"; value: 1}
-		}	
 
 	}	
