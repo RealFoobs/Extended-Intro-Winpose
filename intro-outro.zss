@@ -2,7 +2,7 @@
 
 	# Sets up some failsafes to break down the moment a character is KO'd from the winposes.	
 	# This is redundant and bad, must remove once the main Ikemen repository is fixed.	
-	
+
 if roundstate <= 5 {
 	mapSet{map: "temp1"; value: 0}
 	mapSet{map: "temp2"; value: 0}
@@ -26,11 +26,16 @@ if roundstate < 3 {
 	mapSet{map: "kotemp"; value: gametime}
 	}
 	
-if roundstate < 3 {	
+	# Turn on once their respective conditions are filled.
+	
+if roundstate = 0 {	
 	mapSet{map: "wintemp"; value: 0}
+	mapSet{map: "turnstemp"; value: 0}
 	}
-		
+	
 if roundstate < 2 {
+
+		
 	# Mutes the music during round one.
 	
 	if map(io_intro_bgm_r1) && roundno = 1 {
@@ -51,25 +56,48 @@ if roundstate < 2 {
 
 	# Mutes the music during intros on turns mode.
 	
-	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && stateno != 0 {
+	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && !!roundsexisted {
 		assertSpecial{flag:nomusic}
 		}
 	}
 	
+if roundstate = 1 {
+
+	# Gives some meter at the start of round one.
+	
+	if roundno = 1 && power = 0 {
+		powerset{value :map(io_pow_r1)}
+		}
+	
+	# Gives some meter if the previous teammate was defeated.
+		
+	if map(io_pow_tm) != 0 && !map(turnstemp) && roundno != 1 && teammode = turns && !roundsexisted {
+		poweradd{value :map(io_pow_tm)}
+		mapAdd{map:"turnstemp"; value: 1}
+		}
+		
+	# Gives some meter in the subsequent rounds.
+		
+	if map(io_pow_rx) != 0 && !map(turnstemp) && roundno != 1 && teammode != turns {
+		poweradd{value :map(io_pow_rx)}
+		mapAdd{map:"turnstemp"; value: 1}
+		}
+	}
+
 [Statedef -3]
 	
-	# Centers camera on the winner or loser  during winposes.
+	# Centers camera on the winner or loser during winposes.
 	
 Ignorehitpause if ((map(io_win_cam) = 1 && alive) || (map(io_win_cam) = 2 && !alive)) && roundstate = 4 {
 	zoom{scale:gamewidth/const240p(320.0); lag:0.95; pos:(pos x)/(gamewidth/const240p(320.0))*camerazoom, 0}
 	}
+	
 	# Plays a jingle during winposes.
 	
-Ignorehitpause if map(io_win_fan) && !map(wintemp) && roundstate = 4 && alive && roundtype = 1 {
-	playbgm{bgm:"data/fanfare/breakers.wav";loop:0}
+Ignorehitpause if map(io_win_fan) && !map(wintemp) && roundstate = 4 && roundtype = 1 && alive {
+	playbgm{bgm:"data/fanfare/sf4.mp3";loop:0}
 	mapAdd{map:"wintemp"; value: 1}
 	}	
-
 	
 [Statedef -4]
 	
@@ -153,5 +181,5 @@ Ignorehitpause if map(temp2) && alive && teamleader < 3 {
 	if map(io_win_hud) {
 		assertSpecial{flag:nobardisplay}
 		}
-
+		
 	}	
