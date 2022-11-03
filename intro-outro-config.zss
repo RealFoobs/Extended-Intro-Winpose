@@ -18,6 +18,13 @@ if !map(ignore_io) && roundstate = 0 {
 
 	mapSet{map: "io_intro_skip"; value: 0}
 
+# io_pow_r1 controls how much power the players get at the beginning of round one: default is 0.
+# io_pow_rx controls how much power the players get at the beginning of any subsequent round: default is 0.
+# io_pow_tm controls how much power the players gain after losing a partner in turns mode: default is 0.
+	mapSet{map: "io_pow_r1"; value: 0}
+	mapSet{map: "io_pow_rx"; value: 0}
+	mapSet{map: "io_pow_tm"; value: 0}
+
 # io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
 # io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
 
@@ -29,7 +36,7 @@ if !map(ignore_io) && roundstate = 0 {
 
 	mapSet{map: "io_intro_hud_r1"; value: 0}
 	mapSet{map: "io_intro_hud_rx"; value: 0}	
-
+	
 # "io_ko_slo" controls the default slow motion effect during KO: 1 to remove it, 0 to keep it on. 
 	
 	mapSet{map: "io_ko_slo"; value: 0}
