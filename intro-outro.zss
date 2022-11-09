@@ -1,47 +1,66 @@
+[Function quiet()]
+assertSpecial{flag:nomusic}
+
 [Statedef -2]
 
 	# Sets up some failsafes to break down the moment a character is KO'd from the winposes.	
 	# This is redundant and bad, must remove once the main Ikemen repository is fixed.	
 
 if roundstate <= 5 {
-	mapSet{map: "temp1"; value: 0}
-	mapSet{map: "temp2"; value: 0}
+	mapSet{map: "io_temp1"; value: 0}
+	mapSet{map: "io_temp2"; value: 0}
 	}
 
 	# Tells if a character has been KO'd.
 	
 if roundstate = 3 {
-	mapSet{map: "temp1"; value: 1}
+	mapSet{map: "io_temp1"; value: 1}
 	}
 	
-	# Tells if a winpose should start.
 	
 if roundstate = 4 {
-	mapSet{map: "temp2"; value: 1}
+	
+	# Keeps track of who won and who lost the previous round.
+	
+	if alive {
+		mapSet{map: "io_wincount"; value: 1}
+		}
+	else {
+		mapSet{map: "io_wincount"; value: 0}
+		}
+
+	# Tells if a winpose should start.
+	
+	mapSet{map: "io_temp2"; value: 1}
 	}
 	
 	# Records the gametime as soon as a character has been KO'd.
 	
 if roundstate < 3 {	
-	mapSet{map: "kotemp"; value: gametime}
+	mapSet{map: "io_kotemp"; value: gametime}
 	}
 	
 	# Turn on once their respective conditions are filled.
 	
 if roundstate = 0 {	
-	mapSet{map: "wintemp"; value: 0}
-	mapSet{map: "turnstemp"; value: 0}
+	mapSet{map: "io_wintemp"; value: 0}
+	mapSet{map: "io_turnstemp"; value: 0}
 	}
 	
-if roundstate < 2 {
-
-		
+if roundstate < 2 && teamleader < 3 {
+	
 	# Mutes the music during round one.
 	
 	if map(io_intro_bgm_r1) && roundno = 1 {
-		assertSpecial{flag:nomusic}
+		call quiet();
 		}
+
+	# Mutes the music during intros on turns mode.
 	
+	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && !!roundsexisted {
+		call quiet();
+		}
+
 	# Hides the lifebars on round one.
 	
 	if map(io_intro_hud_r1) && roundno = 1 {
@@ -54,56 +73,55 @@ if roundstate < 2 {
 	assertSpecial{flag:nobardisplay}
 		}
 
-	# Mutes the music during intros on turns mode.
+	# Hides lifebars during intros on turns mode.
 	
-	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && !!roundsexisted {
-		assertSpecial{flag:nomusic}
+	if map(io_intro_hud_tm) && roundno > 1 && teammode = turns && !!roundsexisted {
+		assertSpecial{flag:nobardisplay}
 		}
 	}
-	
-if roundstate = 1 {
 
 	# Gives some meter at the start of round one.
 	
-	if roundno = 1 && power = 0 {
-		powerset{value :map(io_pow_r1)}
+if roundno = 1 && power = 0 && roundstate = 1 && teamleader < 3 {
+	powerset{value :map(io_pow_r1)}
+	}
+	
+if !map(io_turnstemp) && roundno != 1 && roundstate = 1 && teamleader < 3 {
+		
+	# Gives some meter in the subsequent rounds if you win.
+		
+	if map(io_pow_wi) != 0 && teammode != turns && map(io_wincount) {
+		poweradd{value :map(io_pow_wi)}
 		}
 	
+	# Gives some meter in the subsequent rounds if you lose.
+	
+	if map(io_pow_lo) != 0 && teammode != turns && !map(io_wincount) {
+		poweradd{value :map(io_pow_lo)}
+		}
+		
 	# Gives some meter if the previous teammate was defeated.
 		
-	if map(io_pow_tm) != 0 && !map(turnstemp) && roundno != 1 && teammode = turns && !roundsexisted {
+	if map(io_pow_tm) != 0 && teammode = turns && !roundsexisted {
 		poweradd{value :map(io_pow_tm)}
-		mapAdd{map:"turnstemp"; value: 1}
 		}
 		
-	# Gives some meter in the subsequent rounds.
-		
-	if map(io_pow_rx) != 0 && !map(turnstemp) && roundno != 1 && teammode != turns {
-		poweradd{value :map(io_pow_rx)}
-		mapAdd{map:"turnstemp"; value: 1}
-		}
+	mapAdd{map:"io_turnstemp"; value: 1}
 	}
-
-[Statedef -3]
 	
+[Statedef -3]
+
 	# Centers camera on the winner or loser during winposes.
 	
-Ignorehitpause if ((map(io_win_cam) = 1 && alive) || (map(io_win_cam) = 2 && !alive)) && roundstate = 4 {
-	zoom{scale:gamewidth/const240p(320.0); lag:0.95; pos:(pos x)/(gamewidth/const240p(320.0))*camerazoom, 0}
+Ignorehitpause if ((map(io_win_cam) = 1 && alive) || (map(io_win_cam) = 2 && !alive)) && map(io_win_zoo) > 0 && roundstate = 4 && teamleader < 3 {
+	zoom{scale:gamewidth/const240p(320/map(io_win_zoo)); lag:0.95; pos:(pos x)/(gamewidth/const240p(320/map(io_win_zoo)))*camerazoom, (-20*(map(io_win_zoo)-1))}
 	}
-	
-	# Plays a jingle during winposes.
-	
-Ignorehitpause if map(io_win_fan) && !map(wintemp) && roundstate = 4 && roundtype = 1 && alive {
-	playbgm{bgm:"data/fanfare/sf4.mp3";loop:0}
-	mapAdd{map:"wintemp"; value: 1}
-	}	
-	
+
 [Statedef -4]
 	
-	# Change map(temp1) for roundstate = 3 once the main repository is fixed.
+	# Change map(io_temp1) for roundstate = 3 once the main repository is fixed.
 	
-Ignorehitpause if map(temp1) && alive && teamleader < 3 {
+Ignorehitpause if map(io_temp1) && alive && teamleader < 3 {
 
 	# Removes the slomo effect on KO.
 	
@@ -113,8 +131,8 @@ Ignorehitpause if map(temp1) && alive && teamleader < 3 {
 	
 	# Controls the white and red flashes during a special or super ko, if ko slowdown has been turned off.
 	
-	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && map(io_ko_slo) && (gametime - map(kotemp) <= 59) {
-			if (gametime - map(kotemp) <= 6) {
+	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && map(io_ko_slo) && (gametime - map(io_kotemp) <= 59) {
+			if (gametime - map(io_kotemp) <= 6) {
 				envcolor{value:0,0,0; time:1; under:1}
 				}
 					else if gametime % 14 < 7 {
@@ -127,8 +145,8 @@ Ignorehitpause if map(temp1) && alive && teamleader < 3 {
 
 	# Controls the white and red flashes during a special or super ko, if ko slowdown is still active.
 	
-	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && !map(io_ko_slo) && (gametime - map(kotemp) <= 17) {
-			if (gametime - map(kotemp) <= 3) {
+	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && !map(io_ko_slo) && (gametime - map(io_kotemp) <= 17) {
+			if (gametime - map(io_kotemp) <= 3) {
 				envcolor{value:0,0,0; time:1; under:1}
 				}
 					else if gametime % 4 < 2 {
@@ -142,7 +160,7 @@ Ignorehitpause if map(temp1) && alive && teamleader < 3 {
 	# Mutes the music during KOs.
 	
 	if map(io_ko_bgm) {
-		assertSpecial{flag:nomusic}
+		call quiet();
 		}
 
 	# Hides the lifebars during KOs.
@@ -154,15 +172,15 @@ Ignorehitpause if map(temp1) && alive && teamleader < 3 {
 	}
 	
 	# Makes intros un-skippable
-	# Change !map(temp2) for roundstate = 0 once the main repository is fixed.
+	# Change !map(io_temp2) for roundstate < 2 once the main repository is fixed.
 	
-Ignorehitpause if map(io_intro_skip) && !map(temp2) {
+Ignorehitpause if map(io_intro_skip) && !map(io_temp2) && teamleader < 3 {
 	assertSpecial{flag:roundnotskip}
 	}
 
-	# Change map(temp2) for roundstate = 4 once the main repository is fixed.
+	# Change map(io_temp2) for roundstate = 4 once the main repository is fixed.
 	
-Ignorehitpause if map(temp2) && alive && teamleader < 3 {
+Ignorehitpause if map(io_temp2) && alive && teamleader < 3 {
 
 	# Makes winposes un-skippable
 	
@@ -172,14 +190,14 @@ Ignorehitpause if map(temp2) && alive && teamleader < 3 {
 
 	# Mutes the music during winposes.
 	
-	if map(io_win_bgm) && !map(io_win_fan) {
-		assertSpecial{flag:nomusic}
+	if map(io_win_bgm) {
+		call quiet();
 		}
-	
+		
 	# Hides the lifebars during winposes.
 	
 	if map(io_win_hud) {
 		assertSpecial{flag:nobardisplay}
-		}
-		
+		}		
+	
 	}	
