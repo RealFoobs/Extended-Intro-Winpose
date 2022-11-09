@@ -18,11 +18,14 @@ if !map(ignore_io) && roundstate = 0 {
 
 	mapSet{map: "io_intro_skip"; value: 0}
 
-# io_pow_r1 controls how much power the players get at the beginning of round one: default is 0.
-# io_pow_rx controls how much power the players get at the beginning of any subsequent round: default is 0.
-# io_pow_tm controls how much power the players gain after losing a partner in turns mode: default is 0.
+# io_pow_r1 controls how much power the character gain at the beginning of round one: default is 0.
+# io_pow_wi controls how much power the character gain after winning a fight in single, simul, or tag mode: default is 0.
+# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
+# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
+
 	mapSet{map: "io_pow_r1"; value: 0}
-	mapSet{map: "io_pow_rx"; value: 0}
+	mapSet{map: "io_pow_wi"; value: 0}
+	mapSet{map: "io_pow_lo"; value: 0}
 	mapSet{map: "io_pow_tm"; value: 0}
 
 # io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
@@ -33,9 +36,11 @@ if !map(ignore_io) && roundstate = 0 {
 	
 # "io_intro_hud_r1" controls the lifebars before the fights starts on round one: 1 to hide them, and 0 to keep them on.
 # "io_intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 1 to hide them, and 0 to keep them on.
+# "io_intro_hud_rx" controls the lifebars when a new character jumps in on turns mode: 1 to hide them, and 0 to keep them on.
 
 	mapSet{map: "io_intro_hud_r1"; value: 0}
-	mapSet{map: "io_intro_hud_rx"; value: 0}	
+	mapSet{map: "io_intro_hud_rx"; value: 0}
+	mapSet{map: "io_intro_hud_tm"; value: 0}	
 	
 # "io_ko_slo" controls the default slow motion effect during KO: 1 to remove it, 0 to keep it on. 
 	
@@ -65,12 +70,8 @@ if !map(ignore_io) && roundstate = 0 {
 	mapSet{map: "io_win_hud"; value: 0}
 	
 # "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
+# "io_win_zoo" determines how much the camera will zoom at the end of the fight. Default is 1, higher numbers = more zoom.
 
 	mapSet{map: "io_win_cam"; value: 0}
-
-# "io_win_fan" can play a small fanfare at the end of the match: 1 to turn it on, to keep it off.
-# At the moment, the only sound available is Breaker's Revenge's win fanfare.
-
-	mapSet{map: "io_win_fan"; value: 0}
-	
+	mapSet{map: "io_win_zoo"; value: 1}
 	}
