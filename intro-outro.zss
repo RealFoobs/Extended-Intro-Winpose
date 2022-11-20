@@ -2,21 +2,6 @@
 assertSpecial{flag:nomusic}
 
 [Statedef -2]
-
-	# Sets up some failsafes to break down the moment a character is KO'd from the winposes.	
-	# This is redundant and bad, must remove once the main Ikemen repository is fixed.	
-
-if roundstate <= 5 {
-	mapSet{map: "io_temp1"; value: 0}
-	mapSet{map: "io_temp2"; value: 0}
-	}
-
-	# Tells if a character has been KO'd.
-	
-if roundstate = 3 {
-	mapSet{map: "io_temp1"; value: 1}
-	}
-	
 	
 if roundstate = 4 {
 	
@@ -29,9 +14,6 @@ if roundstate = 4 {
 		mapSet{map: "io_wincount"; value: 0}
 		}
 
-	# Tells if a winpose should start.
-	
-	mapSet{map: "io_temp2"; value: 1}
 	}
 	
 	# Records the gametime as soon as a character has been KO'd.
@@ -118,10 +100,9 @@ Ignorehitpause if ((map(io_win_cam) = 1 && alive) || (map(io_win_cam) = 2 && !al
 	}
 
 [Statedef -4]
+
 	
-	# Change map(io_temp1) for roundstate = 3 once the main repository is fixed.
-	
-Ignorehitpause if map(io_temp1) && alive && teamleader < 3 {
+Ignorehitpause if roundstate = 3 && !ishelper && alive && teamleader < 3 {
 
 	# Removes the slomo effect on KO.
 	
@@ -172,15 +153,13 @@ Ignorehitpause if map(io_temp1) && alive && teamleader < 3 {
 	}
 	
 	# Makes intros un-skippable
-	# Change !map(io_temp2) for roundstate < 2 once the main repository is fixed.
 	
-Ignorehitpause if map(io_intro_skip) && !map(io_temp2) && teamleader < 3 {
+Ignorehitpause if map(io_intro_skip) && !ishelper && roundstate < 2 && teamleader < 3 {
 	assertSpecial{flag:roundnotskip}
 	}
 
-	# Change map(io_temp2) for roundstate = 4 once the main repository is fixed.
 	
-Ignorehitpause if map(io_temp2) && alive && teamleader < 3 {
+Ignorehitpause if roundstate = 4 && !ishelper && alive && teamleader < 3 {
 
 	# Makes winposes un-skippable
 	
