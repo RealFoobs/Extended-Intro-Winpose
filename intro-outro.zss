@@ -1,3 +1,15 @@
+[Function flash(i,j,k,l,m,n)]	
+ignorehitpause if time = [$i,$j]	{ envcolor{value:0,0,0; time:1; under:1} }
+ignorehitpause if time = [$k,$l] {
+	ignorehitpause if time % $m < $n { envcolor{value:255,0,0; time:1; under:1} }
+	else ignorehitpause { envcolor{value:255,255,255; time:1; under:1} }
+	}
+
+[Statedef 29108190;Anim:-2;]
+ignorehitpause if root,map(io_ko_slo) {call flash(0,11,12,59,15,7);}
+ignorehitpause if root,!map(io_ko_slo) {call flash(0,2,3,14,3,1);}
+if time > 60 {destroyself {} }
+
 [Statedef -2]
 	
 if roundstate = 4 {
@@ -5,12 +17,10 @@ if roundstate = 4 {
 	if alive { mapSet{map: "io_wincount"; value: 1} }
 	else { mapSet{map: "io_wincount"; value: 0} }
 	}
-	
-	# Records the gametime as soon as a character has been KO'd.	
-if roundstate = [0,2] {	mapSet{map: "io_kotemp"; value: gametime} }
-	
+
 	# Turn on once their respective conditions are filled.
-if roundstate = 0 {	
+if roundstate = [0,2] {	
+	mapSet{map: "io_kotemp"; value: 0}
 	mapSet{map: "io_wintemp"; value: 0}
 	mapSet{map: "io_turnstemp"; value: 0}
 	}
@@ -33,6 +43,7 @@ if roundstate = [0,1] && teamleader < 3 {
 if map(io_pow_r1) != 0 && roundno = 1 && power = 0 && roundstate = 1 && teamleader < 3 { powerset{value :map(io_pow_r1)} }
 	
 if !map(io_turnstemp) && roundno != 1 && roundstate = 1 && teamleader < 3 {
+
 	# Gives some meter in the subsequent rounds if you win.		
 	if map(io_pow_wi) != 0 && teammode != turns && map(io_wincount) { poweradd{value :map(io_pow_wi)} }
 	# Gives some meter in the subsequent rounds if you lose.	
@@ -54,36 +65,15 @@ Ignorehitpause if ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam)
 [Statedef -4]
 
 # Adding additional ignorehitpauses here to account for a bug in 0.98.2
+
 ignorehitpause if roundstate = 3 && !ishelper && alive && teamleader < 3 {
+	# Spawns a helper to control the super bg
+	ignorehitpause if !map(io_kotemp) && ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) {
+		helper{stateNo: 29108190;}
+		mapAdd{map:"io_kotemp"; value: 1}
+		}
 	# Removes the slomo effect on KO.
 	ignorehitpause if map(io_ko_slo) { assertSpecial{flag:nokoslow} }
-	
-	# Controls the white and red flashes during a special or super ko, if ko slowdown has been turned off.
-	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && map(io_ko_slo) && (gametime - map(io_kotemp) <= 59) {
-			ignorehitpause if (gametime - map(io_kotemp) <= 6) {
-				envcolor{value:0,0,0; time:1; under:1}
-				}
-					else ignorehitpause if gametime % 14 < 7 {
-						envcolor{value:255,0,0; time:1; under:1}
-						}
-						else ignorehitpause {
-							envcolor{value:255,255,255; time:1; under:1}
-							}
-		}
-
-	# Controls the white and red flashes during a special or super ko, if ko slowdown is still active.	
-	if ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) && !map(io_ko_slo) && (gametime - map(io_kotemp) <= 17) {
-			ignorehitpause if (gametime - map(io_kotemp) <= 3) {
-				envcolor{value:0,0,0; time:1; under:1}
-				}
-					else ignorehitpause if gametime % 4 < 2 {
-						envcolor{value:255,0,0; time:1; under:1}
-						}
-						else ignorehitpause {
-							envcolor{value:255,255,255; time:1; under:1}
-							}
-		}
-		
 	# Mutes the music during KOs.
 	ignorehitpause if map(io_ko_bgm) { assertSpecial{flag:nomusic} }
 	# Hides the lifebars during KOs.
