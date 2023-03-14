@@ -1,4 +1,4 @@
-# Read the description on each line with a "#" symbol, it'll explain the function of the item below it. The only part you may want to change is the number after "value: ".
+# Read the description on each line with a "#" symbol, it'll explain the function of the item below it. The only part you may want to change is the number after ":= ", be careful not to delete the semicolon.
 
 # If you want to override the global behavior for any specific character, copy the following on its .def file (minus the # symbols)
 # [Map]
@@ -10,68 +10,69 @@
 # ignore_io = 1
 # io_intro_bgm_tm = 1
 
-[Statedef -2]
+[Statedef -4]
 
 if !map(ignore_io) && roundstate = 0 {
 
-# io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
+	# io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
-	mapSet{map: "io_intro_skip"; value: 0}
+	map(io_intro_skip) := 0;
 
-# io_pow_r1 controls how much power the character gain at the beginning of round one: default is 0.
-# io_pow_wi controls how much power the character gain after winning a fight in single, simul, or tag mode: default is 0.
-# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
-# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
+	# io_pow_r1 controls how much power the character gain at the beginning of round one: default is 0.
+	# io_pow_wi controls how much power the character gain after winning a fight in single, simul, or tag mode: default is 0.
+	# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
+	# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
 
-	mapSet{map: "io_pow_r1"; value: 0}
-	mapSet{map: "io_pow_wi"; value: 0}
-	mapSet{map: "io_pow_lo"; value: 0}
-	mapSet{map: "io_pow_tm"; value: 0}
+	map(io_pow_r1) := 0;
+	map(io_pow_wi) := 0;
+	map(io_pow_lo) := 0;
+	map(io_pow_tm) := 0;
 
-# io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
-# io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
+	# io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
+	# io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
 
-	mapSet{map: "io_intro_bgm_r1"; value: 0}
-	mapSet{map: "io_intro_bgm_tm"; value: 0}
+	map(io_intro_bgm_r1) := 0;
+	map(io_intro_bgm_tm) := 0;
 	
-# "io_intro_hud_r1" controls the lifebars before the fights starts on round one: 1 to hide them, and 0 to keep them on.
-# "io_intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 1 to hide them, and 0 to keep them on.
-# "io_intro_hud_rx" controls the lifebars when a new character jumps in on turns mode: 1 to hide them, and 0 to keep them on.
+	# "io_intro_hud_r1" controls the lifebars before the fights starts on round one: 1 to hide them, and 0 to keep them on.
+	# "io_intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 1 to hide them, and 0 to keep them on.
+	# "io_intro_hud_rx" controls the lifebars when a new character jumps in on turns mode: 1 to hide them, and 0 to keep them on.
 
-	mapSet{map: "io_intro_hud_r1"; value: 0}
-	mapSet{map: "io_intro_hud_rx"; value: 0}
-	mapSet{map: "io_intro_hud_tm"; value: 0}	
+	map(io_intro_hud_r1) := 0;
+	map(io_intro_hud_rx) := 0;
+	map(io_intro_hud_tm) := 0;
 	
-# "io_ko_slo" controls the default slow motion effect during KO: 1 to remove it, 0 to keep it on. 
+	# "io_ko_slo" controls the default slow motion effect during KO: 1 to remove it, 0 to keep it on. 
 	
-	mapSet{map: "io_ko_slo"; value: 0}
+	map(io_ko_slo) := 0;
 	
-# "io_ko_spc" controls the white/red flashing background when the finishing blow is a special attack: 1 to enable it, and 0 to disable it.
-# "io_ko_sup" controls the white/red flashing background when the finishing blow is a super attack: 1 to enable it, and 0 to disable it.
-# If you suffer from seizures, you should keep these at 0.
+	# "io_ko_spc" controls the white/red flashing background when the finishing blow is a special attack: 1 to enable it, and 0 to disable it.
+	# "io_ko_sup" controls the white/red flashing background when the finishing blow is a super attack: 1 to enable it, and 0 to disable it.
+	# If you suffer from seizures, you should keep these at 0.
 	
-	mapSet{map: "io_ko_spc"; value: 0}
-	mapSet{map: "io_ko_sup"; value: 0}
+	map(io_ko_spc) := 0;
+	map(io_ko_sup) := 0;
 
-# "io_ko_bgm" controls the background music immediately after a character is KO'd: 1 to mute it, and 0 to keep it on.
-# "io_ko_hud" controls the lifebars immediately after a character is KO'd: 1 to hide them, and 0 to keep them on.
+	# "io_ko_bgm" controls the background music immediately after a character is KO'd: 1 to mute it, and 0 to keep it on.
+	# "io_ko_hud" controls the lifebars immediately after a character is KO'd: 1 to hide them, and 0 to keep them on.
 
-	mapSet{map: "io_ko_bgm"; value: 0}	
-	mapSet{map: "io_ko_hud"; value: 0}
+	map(io_ko_bgm) := 0;
+	map(io_ko_hud) := 0;
 
-# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
+	# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
-	mapSet{map: "io_win_skip"; value: 0}
+	map(io_win_skip) := 0;
 	
-# "io_win_bgm" controls the background music during winposes: 1 to mute it, and 0 to keep it on.
-# "io_win_hud" controls the lifebars during winposes: 1 to hide them, and 0 to keep them on.
+	# "io_win_bgm" controls the background music during winposes: 1 to mute it, and 0 to keep it on.
+	# "io_win_hud" controls the lifebars during winposes: 1 to hide them, and 0 to keep them on.
 
-	mapSet{map: "io_win_bgm"; value: 0}	
-	mapSet{map: "io_win_hud"; value: 0}
+	map(io_win_bgm) := 0;
+	map(io_win_hud) := 0;
 	
-# "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
-# "io_win_zoo" determines how much the camera will zoom at the end of the fight. Default is 1, higher numbers = more zoom.
+	# "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
+	# "io_win_zoo" determines how much the camera will zoom at the end of the fight. Default is 1, higher numbers = more zoom.
 
-	mapSet{map: "io_win_cam"; value: 0}
-	mapSet{map: "io_win_zoo"; value: 1}
+	map(io_win_cam) := 0;
+	map(io_win_zoo) := 1.25;
+	
 	}

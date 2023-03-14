@@ -1,32 +1,38 @@
 [Function flash(i,j,k,l,m,n)]	
 ignorehitpause if time = [$i,$j]	{ envcolor{value:0,0,0; time:1; under:1} }
 ignorehitpause if time = [$k,$l] {
-	ignorehitpause if time % $m < $n { envcolor{value:255,0,0; time:1; under:1} }
-	else ignorehitpause { envcolor{value:255,255,255; time:1; under:1} }
+	if time % $m < $n { envcolor{value:255,0,0; time:1; under:1} }
+	else { envcolor{value:255,255,255; time:1; under:1} }
 	}
 
+[Statedef 29108180;Anim:-2;]
+if roundstate = 2 { destroyself{} }	
+persistent(0) if playerno < 3 {
+	if teammode != turns {
+	# Gives some meter in the subsequent rounds if you win.	
+		if map(io_pow_wi) != 0 && map(io_wincount) > 0 { poweradd{value :map(io_pow_wi); redirectid:root,ID;} }
+	# Gives some meter in the subsequent rounds if you lose.	
+		else if map(io_pow_lo) != 0 && map(io_wincount) = 0 { poweradd{value :map(io_pow_lo); redirectid:root,ID;} }
+		}
+	# Gives some meter if the previous teammate was defeated.		
+	else if map(io_pow_tm) != 0 && !roundsexisted { poweradd{value :map(io_pow_tm); redirectid:root,ID;} }
+	}
+	
 [Statedef 29108190;Anim:-2;]
 ignorehitpause if root,map(io_ko_slo) {call flash(0,11,12,59,15,7);}
 ignorehitpause if root,!map(io_ko_slo) {call flash(0,2,3,14,3,1);}
-if time > 60 {destroyself {} }
+if roundstate != 3 { destroyself{} }
 
-[Statedef -2]
-	
+
+[Statedef -2]	
+
 if roundstate = 4 {
 	# Keeps track of who won and who lost the previous round.	
-	if alive { mapSet{map: "io_wincount"; value: 1} }
-	else { mapSet{map: "io_wincount"; value: 0} }
-	}
-
-	# Turn on once their respective conditions are filled.
-if roundstate = [0,2] {	
-	mapSet{map: "io_kotemp"; value: 0}
-	mapSet{map: "io_wintemp"; value: 0}
-	mapSet{map: "io_turnstemp"; value: 0}
+	if alive { map(io_wincount):= 1; }
+	else { map(io_wincount):= 0; }
 	}
 	
-if roundstate = [0,1] && teamleader < 3 {
-	
+if roundstate = [0,1] && playerno < 3 {	
 	# Mutes the music during round one.	
 	if map(io_intro_bgm_r1) && roundno = 1 { assertSpecial{flag:nomusic} }
 	# Mutes the music during intros on turns mode.	TEST THIS!
@@ -40,23 +46,17 @@ if roundstate = [0,1] && teamleader < 3 {
 	}
 
 	# Gives some meter at the start of round one.
-if map(io_pow_r1) != 0 && roundno = 1 && power = 0 && roundstate = 1 && teamleader < 3 { powerset{value :map(io_pow_r1)} }
+if map(io_pow_r1) != 0 && roundno = 1 && power = 0 && roundstate = 1 && playerno < 3 { powerset{value :map(io_pow_r1)} }
 	
-if !map(io_turnstemp) && roundno != 1 && roundstate = 1 && teamleader < 3 {
-
-	# Gives some meter in the subsequent rounds if you win.		
-	if map(io_pow_wi) != 0 && teammode != turns && map(io_wincount) { poweradd{value :map(io_pow_wi)} }
-	# Gives some meter in the subsequent rounds if you lose.	
-	if map(io_pow_lo) != 0 && teammode != turns && !map(io_wincount) { poweradd{value :map(io_pow_lo)} }
-	# Gives some meter if the previous teammate was defeated.		
-	if map(io_pow_tm) != 0 && teammode = turns && !roundsexisted { poweradd{value :map(io_pow_tm)} }
-	mapAdd{map:"io_turnstemp"; value: 1}
+	# Spawns a helper to handle meter gain
+if !numhelper(29108180) && roundno != 1 && roundstate = 1 && playerno < 3 {
+	helper{stateNo: 29108180;ID:29108180; extendsmap:1;}
 	}
-	
+
 [Statedef -3]
 
 	# Centers camera on the winner or loser during winposes.
-Ignorehitpause if ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 && roundstate = 4 && teamleader < 3 {
+Ignorehitpause if ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 && roundstate = 4 && playerno < 3 {
 	zoom{scale:gamewidth/const240p(320/map(io_win_zoo)); 
 	lag:0.95; 
 	pos:(pos x)/(gamewidth/const240p(320/map(io_win_zoo)))*camerazoom, (-20*(map(io_win_zoo)-1))}
@@ -66,11 +66,10 @@ Ignorehitpause if ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam)
 
 # Adding additional ignorehitpauses here to account for a bug in 0.98.2
 
-ignorehitpause if roundstate = 3 && !ishelper && alive && teamleader < 3 {
+ignorehitpause if roundstate = 3 && !ishelper && alive && playerno < 3 {
 	# Spawns a helper to control the super bg
-	ignorehitpause if !map(io_kotemp) && ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) {
-		helper{stateNo: 29108190;}
-		mapAdd{map:"io_kotemp"; value: 1}
+	if !numhelper(29108190) && ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) {
+		helper{stateNo: 29108190;ID:29108190;}
 		}
 	# Removes the slomo effect on KO.
 	ignorehitpause if map(io_ko_slo) { assertSpecial{flag:nokoslow} }
@@ -81,9 +80,9 @@ ignorehitpause if roundstate = 3 && !ishelper && alive && teamleader < 3 {
 	}
 	
 	# Makes intros un-skippable
-Ignorehitpause if map(io_intro_skip) && !ishelper && roundstate < 2 && teamleader < 3 { assertSpecial{flag:roundnotskip} }
+Ignorehitpause if map(io_intro_skip) && !ishelper && roundstate < 2 && playerno < 3 { assertSpecial{flag:roundnotskip} }
 
-ignorehitpause if roundstate = 4 && !ishelper && alive && teamleader < 3 {
+ignorehitpause if roundstate = 4 && !ishelper && alive && playerno < 3 {
 	# Makes winposes un-skippable	
 	if map(io_win_skip) { assertSpecial{flag:roundnotskip} }
 	# Mutes the music during winposes.
