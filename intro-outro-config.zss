@@ -16,17 +16,17 @@ if !map(ignore_io) && roundstate = 0 {
 
 	# io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
-	map(io_intro_skip) := 0;
+	map(io_intro_skip) := 1;
 
 	# io_pow_r1 controls how much power the character gain at the beginning of round one: default is 0.
 	# io_pow_wi controls how much power the character gain after winning a fight in single, simul, or tag mode: default is 0.
 	# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
 	# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
 
-	map(io_pow_r1) := 0;
+	map(io_pow_r1) := 1000;
 	map(io_pow_wi) := 0;
 	map(io_pow_lo) := 0;
-	map(io_pow_tm) := 0;
+	map(io_pow_tm) := 1000;
 
 	# io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
 	# io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
@@ -72,7 +72,7 @@ if !map(ignore_io) && roundstate = 0 {
 	# "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
 	# "io_win_zoo" determines how much the camera will zoom at the end of the fight. Default is 1, higher numbers = more zoom.
 
-	map(io_win_cam) := 0;
+	map(io_win_cam) := 1;
 	map(io_win_zoo) := 1.25;
-	
+
 	}
