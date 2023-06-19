@@ -1,0 +1,182 @@
+[function faux_control()f]
+let f = 0;
+if stateno = 29109000 || stateno = 29109020 || (stateno = 29109052 && (time = 3 || animtime = 0)) {
+	let f = 1;
+	}
+
+# Custom states start here
+#-------------------------------------------------------------------------------
+# Custom stand
+[StateDef 29109000; type: S; physics: S; sprpriority: 0;]
+
+if cond(anim = 5, animTime = 0, anim != 0) {changeAnim{value: 0}}
+if time = 0 {velSet{y: 0}}
+if time = 4 || abs(vel x) < const(movement.stand.friction.threshold) {velSet{x: 0}}
+if !alive {changeState{value: 5050;}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom stand to Crouch
+[StateDef 29109010; type: C; physics: C; anim: 10;]
+
+if time = 0 {velMul{x: .75}}
+if abs(vel x) < const(movement.crouch.friction.threshold) {velSet{x: 0}}
+if animTime = 0 {changeState{value: 29109011}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom crouching
+[StateDef 29109011; type: C; physics: C; anim: 11; sprpriority: 0;]
+
+if anim = 6 && animTime = 0 {changeAnim{value: 11}}
+if abs(vel x) < const(movement.crouch.friction.threshold) {velSet{x: 0}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom crouch to Stand
+[StateDef 29109012; type: S; physics: S; anim: 12;]
+if animTime = 0 {changeState{value: 29109000}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom walk
+[StateDef 29109020; type: S; physics: S; sprpriority: 0;]
+
+if command = "holdback" {velSet{x: const(velocity.walk.back.x)}} 
+else if command = "holdfwd" {velSet{x: const(velocity.walk.fwd.x)}}
+else {changeState{value: 29109000}}
+if vel x > 0 {
+	if cond(anim = 5, animTime = 0, anim != 20) {changeAnim{value: 20}}
+	}
+else if vel x < 0 {
+	if cond(anim = 5, animTime = 0, anim != 21) {changeAnim{value: 21}}
+	}
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom jump Start
+[StateDef 29109040; type: S; physics: S; anim: 40; sprpriority: 1; facep2: 1;]
+
+if time = 0 {sysVar(1) := 0;}
+if command = "holdback" {sysVar(1) := -1;}
+else if command = "holdfwd" {sysVar(1) := 1;}
+
+if animTime = 0 {
+	if sysVar(1) = 0 {
+		let x = const(velocity.jump.neu.x);
+	} else if sysVar(1) = 1 {
+		if prevStateNo = 29109100 {
+			let x = const(velocity.runjump.fwd.x);
+		} else {
+			let x = const(velocity.jump.fwd.x);
+		}
+	} else {
+		let x = const(velocity.jump.back.x);
+	}
+	velSet{x: $x; y: const(velocity.jump.y)}
+	changeState{value: 29109050;}
+}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom airJump Start
+[StateDef 29109045; type: A; physics: N; velset: 0, 0;]
+
+changeAnim{value: ifElse(selfAnimExist(44), 44, 41)}
+if time = 0 {sysVar(1) := 0;}
+if command = "holdback" {sysVar(1) := -1;} 
+else if command = "holdfwd" {sysVar(1) := 1;}
+if time = 2 {
+	if sysVar(1) = 0 {let x = const(velocity.airjump.neu.x);} 
+	else if sysVar(1) = 1 {let x = const(velocity.airjump.fwd.x);} 
+	else {let x = const(velocity.airjump.back.x);}
+	velSet{x: $x; y: const(velocity.airjump.y)}
+	changeState{value: 29109050;}
+	}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom jump Up
+[StateDef 29109050; type: A; physics: A;]
+
+if time = 0 {
+	sysVar(1) := 0;
+	changeAnim{value: cond(vel x = 0, 41, ifElse(vel x > 0, 42, 43))}
+	}
+persistent(0) if vel y > const240p(-2) && selfAnimExist(anim + 3) && anim = [41, 43] {changeAnim{value: anim + 3}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom jump Land
+[StateDef 29109052; type: S; physics: S; anim: 47; ctrl:0;]
+if time = 0 {
+	velSet{y: 0}
+	posSet{y: 0}
+	}
+	
+if abs(vel x) < const(movement.stand.friction.threshold) {velSet{x: 0}}
+if animtime = 0 {changestate{value:29109000;}}
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom run forward
+[StateDef 29109100; type: S; physics: S; anim: 100; sprpriority: 1;]
+
+velSet{x: const(velocity.run.fwd.x)}
+assertSpecial{flag: noWalk; flag2: nocrouch}
+if command != "holdfwd" {changeState{value: 29109000}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom hop backwards
+[StateDef 29109105; type: A; physics: A; anim: 105; sprpriority: 1;]
+
+if time = 0 {velSet{x: const(velocity.run.back.x); y: const(velocity.run.back.y)}} 
+if vel y > 0 && pos y >= 0 {changeState{value: 29109106}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+# Custom hop backwards (land)
+[StateDef 29109106; type: S; physics: S; anim: 47;]
+
+if abs(vel x) < const(movement.stand.friction.threshold) {velSet{x: 0}}
+if time = 0 {
+	velSet{y: 0}
+	posSet{y: 0}
+	} 
+else if time = 2 {makeDust{pos: 0, 0; spacing: 1}} 
+
+# Negative states start here
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef -1]
+
+	# controls state transitions during the pre-fight state
+if numhelper(29108191) && !ishelper && map(io_pre_fight) {
+	# keeps the character anchored to custom states
+	if stateno = 52 {
+		ctrlset{value:0}
+		changestate{value:29109052;}
+		}
+	if stateno = 0 {changestate{value:29109000;}}
+	let f = call faux_control();
+	# faux-control scenarios
+	if $f {
+	# run forward
+		if command = "FF"{changestate{value:29109100}}
+	# dash backwards
+		if command = "BB"{changestate{value:29109105}}
+	# walk
+		if (command != "holdup" && command != "holddown") && (command = "holdfwd" || command = "holdback") {changestate{value:29109020}}
+	# crouch
+		if command = "holddown"{changestate{value:29109010}}
+		}
+	# jump
+	if ($f || stateno = 29109100) && command = "holdup"{changestate{value:29109040}}
+	# crouch to stand
+	if stateno = 29109011 && command != "holddown"{changestate{value:29109012}}
+	}
+
+	# transitions as smoothly as possible into regular states
+if !numhelper(29108191) && !ishelper && stateno = [29109000,29109106] {
+	# crouching states
+	if statetype = C {changestate{value:11;}}
+	# running
+	else if stateno = 29109100 {changestate{value:100;}}
+	# landing
+	else if stateno = 29109052 {changestate{value:52;}}
+	# walking
+	else if stateno = 29109020 {changestate{value:20;}}
+	# standing
+	else if stateno = 29109000 {changestate{value:0;}}
+	}
+	
+#--------------------------------------------------------------------------------------------------------------------------------------------------------

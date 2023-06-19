@@ -1,82 +1,122 @@
-[Function flash(i,j,k,l,m,n)]
+[function flash(i,j,k,l,m,n)]
 	ignorehitpause if time = [$i,$j] {envcolor{value:0,0,0; time:1; under:1;}}
 	ignorehitpause if time = [$k,$l] {
 		if time % $m < $n {envcolor{value:255,0,0; time:1; under:1;}}
 		else {envcolor{value:255,255,255; time:1; under:1;}}
 		}
 
-[Statedef 29108180;Anim:-2;]
-if roundstate = 2 {destroyself{}}
+# Helper states start here
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef 29108180;anim:-2;]
 persistent(0) if playerno < 3 {
 	if teammode != turns {
-	# Gives some meter in the subsequent rounds if you win.	
+	# gives some meter in the subsequent rounds if you win.	
 		if map(io_pow_wi) != 0 && map(io_wincount) > 0 {poweradd{value :map(io_pow_wi); redirectid:root,ID;}}
-	# Gives some meter in the subsequent rounds if you lose.	
+	# gives some meter in the subsequent rounds if you lose.	
 		else if map(io_pow_lo) != 0 && map(io_wincount) = 0 {poweradd{value :map(io_pow_lo); redirectid:root,ID;}}
 		}
-	# Gives some meter if the previous teammate was defeated.		
+	# gives some meter if the previous teammate was defeated.		
 	else if map(io_pow_tm) != 0 && !roundsexisted {poweradd{value :map(io_pow_tm); redirectid:root,ID;}}
 	}
+if root,ctrl {destroyself{}}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef 29108190;anim:-2;]# causes seizures
+ignorehitpause if roundstate = 3 {
+	if root,map(io_ko_slo) {call flash(0,11,12,59,15,7);}
+	else {call flash(0,2,3,14,3,1);}
+	}
+else {destroyself{}}
 	
-[Statedef 29108190;Anim:-2;]
-ignorehitpause if root,map(io_ko_slo) {call flash(0,11,12,59,15,7);}
-ignorehitpause if root,!map(io_ko_slo) {call flash(0,2,3,14,3,1);}
-if roundstate != 3 {destroyself{}}
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef 29108191;anim:-2;]# allows movement during intros
+if (root,ctrl && enemy,ctrl) || time > 720 {destroyself{}}
+
+# Negative states start here
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef -2]
+
+	#test features
+ignorehitpause {
+	let f = 140;
+	let g = 132;
+	if playerno = 1 {
+		text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}
+		if numhelper(29108191) {text{removetime:1; layerno:1; pos:$f+100,$g;text:"Time limit: %i";params:helper(29108191),719-time;}}
+	}
+	text{removetime:1; layerno:1; pos:$f,$g+playerno*10;text:"P%v Ctrl = %d    Prev State No  = %i";params:playerno,ctrl,prevstateno;}
+	text{removetime:1; layerno:1; pos:$f+240,$g+playerno*10;text:"State No  = %i";params:stateno;}
+	}
 
 [Statedef -3]
 
-	# Centers camera on the winner or loser during winposes.
-Ignorehitpause if roundstate = 4 && playerno < 3 && ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 {
+	# centers camera on the winner or loser during winposes.
+ignorehitpause if roundstate = 4 && !ishelper && playerno < 3 && ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 {
 	let z = gamewidth/const240p(320/map(io_win_zoo));
-	zoom{scale:$z;lag:0.97; pos:(pos x)/$z*camerazoom, 0;}
+	zoom{scale:$z;lag:0.97; pos:(pos x/$z)*camerazoom, pos y; stagebound:1; camerabound:1;}
 	}
 
-[Statedef -4]	
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef -4]
+
+	# this is only relevant for external detection
+if stateno = 5900 && !map(ignore_io) {map(foobs_intro_system):= 1;}
+
+
+if !ishelper && map(io_pre_fight){
+	# spawns a helper that lets the character move during the pre-fight state
+	if roundstate = [0,1] && !isasserted(intro) && !numhelper(29108191) {helper{stateno:29108191; ID:29108191; name:"Pre-fight helper"}}
+	# prevents the characters from moving and breaking free
+	if numhelper(29108191) {
+		assertspecial{flag:nointroreset;flag2:nohardcodedkeys;}
+		if stateno = [0,106] {ctrlset{value:0}}
+		}
+	}
 
 if roundstate = [0,1] && playerno < 3 {	
-	# Mutes the music during round one.
-	if map(io_intro_bgm_r1) && roundno = 1 {assertSpecial{flag:nomusic;}}
-	# Mutes the music during intros on turns mode.	TEST THIS!
-	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && !roundsexisted {assertSpecial{flag:nomusic;}}
-	# Hides the lifebars on round one.
-	if map(io_intro_hud_r1) && roundno = 1 {assertSpecial{flag:nobardisplay;}}
-	# Hides lifebars on round two onwards.
-	if map(io_intro_hud_rx) && roundno > 1 {assertSpecial{flag:nobardisplay;}}
-	# Hides lifebars during intros on turns mode.
-	if map(io_intro_hud_tm) && roundno > 1 && teammode = turns && !roundsexisted {assertSpecial{flag:nobardisplay;}}
+	# mutes the music during round one.
+	if map(io_intro_bgm_r1) && roundno = 1 {assertspecial{flag:nomusic;}}
+	# mutes the music during intros on turns mode.	test this!
+	if map(io_intro_bgm_tm) && roundno > 1 && teammode = turns && !roundsexisted {assertspecial{flag:nomusic;}}
+	# hides the lifebars on round one.
+	if map(io_intro_hud_r1) && roundno = 1 {assertspecial{flag:nobardisplay;}}
+	# hides lifebars on round two onwards.
+	if map(io_intro_hud_rx) && roundno > 1 {assertspecial{flag:nobardisplay;}}
+	# hides lifebars during intros on turns mode.
+	if map(io_intro_hud_tm) && roundno > 1 && teammode = turns && !roundsexisted {assertspecial{flag:nobardisplay;}}
 	}
 
 if roundstate = 4 {
-	# Keeps track of who won and who lost the previous round.
+	# keeps track of who won and who lost the previous round.
 	if alive {map(io_wincount):= 1;}
 	else {map(io_wincount):= 0;}
 	}
 
-	# Gives some meter at the start of round one.
+	# gives some meter at the start of round one.
 if roundstate = 1 && playerno < 3 && map(io_pow_r1) != 0 && roundno = 1 && power = 0 {powerset{value :map(io_pow_r1);}}
 
-	# Spawns a helper to handle meter gain
-if roundstate = 1 && playerno < 3 && !numhelper(29108180) && roundno != 1 {helper{stateNo: 29108180;ID:29108180; extendsmap:1;}}
+	# spawns a helper to handle meter gain
+if roundstate = 1 && playerno < 3 && !numhelper(29108180) && roundno != 1 {helper{stateno:29108180; ID:29108180; extendsmap:1; name:"Meter management helper";}}
 
 ignorehitpause if roundstate = 3 && playerno < 3 && !ishelper && alive {
-	# Spawns a helper to control the super bg
-	if !numhelper(29108190) && ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) {helper{stateNo: 29108190;ID:29108190;}}
-	# Removes the slomo effect on KO.
-	ignorehitpause if map(io_ko_slo) {assertSpecial{flag:nokoslow;}}
-	# Mutes the music during KOs.
-	ignorehitpause if map(io_ko_bgm) {assertSpecial{flag:nomusic;}}
-	# Hides the lifebars during KOs.
-	ignorehitpause if map(io_ko_hud) {assertSpecial{flag:nobardisplay;}}
+	# spawns a helper to control the super bg
+	if !numhelper(29108190) && ((map(io_ko_spc) && winspecial) || (map(io_ko_sup) && winhyper)) {helper{stateno:29108190; ID:29108190;}}
+	# removes the slomo effect on ko.
+	ignorehitpause if map(io_ko_slo) {assertspecial{flag:nokoslow;}}
+	# mutes the music during kos.
+	ignorehitpause if map(io_ko_bgm) {assertspecial{flag:nomusic;}}
+	# hides the lifebars during kos.
+	ignorehitpause if map(io_ko_hud) {assertspecial{flag:nobardisplay;}}
 	}
 
-	# Makes intros un-skippable
-Ignorehitpause if roundstate < 2 && playerno < 3 && map(io_intro_skip) && !ishelper {assertSpecial{flag:roundnotskip;}}
+	# makes intros un-skippable
+ignorehitpause if roundstate < 2 && playerno < 3 && map(io_intro_skip) {assertspecial{flag:roundnotskip;}}
 
 ignorehitpause if roundstate = 4 && playerno < 3 && !ishelper && alive {
-	# Makes winposes un-skippable
-	if map(io_win_skip) {assertSpecial{flag:roundnotskip;}}
-	# Mutes the music during winposes.
-	ignorehitpause if map(io_win_bgm) {assertSpecial{flag:nomusic;}}
-	# Hides the lifebars during winposes.
-	ignorehitpause if map(io_win_hud) {assertSpecial{flag:nobardisplay;}}
+	# makes winposes un-skippable
+	if map(io_win_skip) {assertspecial{flag:roundnotskip;}}
+	# mutes the music during winposes.
+	ignorehitpause if map(io_win_bgm) {assertspecial{flag:nomusic;}}
+	# hides the lifebars during winposes.
+	ignorehitpause if map(io_win_hud) {assertspecial{flag:nobardisplay;}}
 	}
