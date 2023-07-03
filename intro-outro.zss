@@ -30,30 +30,36 @@ else {destroyself{}}
 	
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef 29108191;anim:-2;]# allows movement during intros
-if (root,ctrl && enemy,ctrl) || time > 720 {destroyself{}}
+if (root,ctrl || enemy,ctrl) || time > 480 {destroyself{}}
 
 # Negative states start here
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef -2]
 
-	#test features
+	# test features
 ignorehitpause {
 	let f = 140;
-	let g = 132;
+	let g = 152;
 	if playerno = 1 {
 		text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}
-		if numhelper(29108191) {text{removetime:1; layerno:1; pos:$f+100,$g;text:"Time limit: %i";params:helper(29108191),719-time;}}
+		if numhelper(29108191) {text{removetime:1; layerno:1; pos:$f+100,$g;text:"Time limit: %i";params:helper(29108191),479-time;}}
 	}
 	text{removetime:1; layerno:1; pos:$f,$g+playerno*10;text:"P%v Ctrl = %d    Prev State No  = %i";params:playerno,ctrl,prevstateno;}
 	text{removetime:1; layerno:1; pos:$f+240,$g+playerno*10;text:"State No  = %i";params:stateno;}
 	}
+	
+	# manual turning
+let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
+ignorehitpause if stateno = [29109000,29109020] && ($x0 < -5) {turn{}}
 
 [Statedef -3]
 
 	# centers camera on the winner or loser during winposes.
 ignorehitpause if roundstate = 4 && !ishelper && playerno < 3 && ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 {
 	let z = gamewidth/const240p(320/map(io_win_zoo));
-	zoom{scale:$z;lag:0.97; pos:(pos x/$z)*camerazoom, pos y; stagebound:1; camerabound:1;}
+	let bon = 0;
+	if leftedge > 30 || rightedge > 30 {let bon = 1;}
+	zoom{scale:$z;lag:0.97; pos:(pos x/$z)*camerazoom, pos y; stagebound:$bon; camerabound:1;}
 	}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -69,7 +75,6 @@ if !ishelper && map(io_pre_fight){
 	# prevents the characters from moving and breaking free
 	if numhelper(29108191) {
 		assertspecial{flag:nointroreset;flag2:nohardcodedkeys;}
-		if stateno = [0,106] {ctrlset{value:0}}
 		}
 	}
 

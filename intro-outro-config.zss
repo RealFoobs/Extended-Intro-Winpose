@@ -24,10 +24,10 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
 	# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
 
-	map(io_pow_r1) := 3000;
+	map(io_pow_r1) := 0;
 	map(io_pow_wi) := 0;
 	map(io_pow_lo) := 0;
-	map(io_pow_tm) := 1000;
+	map(io_pow_tm) := 0;
 
 	# io_intro_bgm_r1 controls the background music while the intros play on round one: 1 to mute it, and 0 to keep it on. 
 	# io_intro_bgm_tm controls the background music when a new character jumps in on turns mode: 1 to mute it, and 0 to keep it on.
@@ -78,4 +78,5 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	
 	# io_pre_fight controls if the characters can move between the intro and start of the round stateno: 1 to allow movement, 0 to keep the characters static.
 	map(io_pre_fight) := 1;
+	
 	}

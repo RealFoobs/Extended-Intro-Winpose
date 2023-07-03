@@ -84,12 +84,12 @@ buffer.time = 1
 
 [Command]
 name = "FF"
-command =
+command = ~F,F
 time = 8
 
 [Command]
 name = "BB"
-command =
+command = ~B,B
 time = 8
 
 [Command]
