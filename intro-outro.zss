@@ -30,7 +30,7 @@ else {destroyself{}}
 	
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef 29108191;anim:-2;]# allows movement during intros
-if (root,ctrl || enemy,ctrl) || time > 480 {destroyself{}}
+if root,ctrl || enemy,ctrl || time > 360 {destroyself{}}
 
 # Negative states start here
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -40,17 +40,18 @@ if (root,ctrl || enemy,ctrl) || time > 480 {destroyself{}}
 ignorehitpause {
 	let f = 140;
 	let g = 152;
-	if playerno = 1 {
-		text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}
-		if numhelper(29108191) {text{removetime:1; layerno:1; pos:$f+100,$g;text:"Time limit: %i";params:helper(29108191),479-time;}}
-	}
+	if playerno = 1 {text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}}
 	text{removetime:1; layerno:1; pos:$f,$g+playerno*10;text:"P%v Ctrl = %d    Prev State No  = %i";params:playerno,ctrl,prevstateno;}
-	text{removetime:1; layerno:1; pos:$f+240,$g+playerno*10;text:"State No  = %i";params:stateno;}
+	text{removetime:1; layerno:1; pos:$f+240,$g+playerno*10;text:"State No  = %v";params:stateno;}
+	text{removetime:1; layerno:1; pos:$f+380,$g+playerno*10;text:"Pos = %d,%i ";params:floor(pos x),floor(pos y);}
 	}
 	
-	# manual turning
+	# manual turning, taken from 2OS
 let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
-ignorehitpause if stateno = [29109000,29109020] && ($x0 < -5) {turn{}}
+ignorehitpause if numhelper(29108191) && ($x0 < -5) && (anim = 0 || anim = 11 || anim = 20) {
+	changeanim{value:5+(anim = 11)}
+	turn{}
+	}
 
 [Statedef -3]
 

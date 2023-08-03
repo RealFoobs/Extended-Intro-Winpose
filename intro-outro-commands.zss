@@ -7,25 +7,20 @@ if (stateno = 5900 && roundno > 1 && !isasserted(intro)) ||stateno = 29109000 ||
 # Custom states start here
 #-------------------------------------------------------------------------------
 # Custom stand
-[StateDef 29109000; type: S; physics: S; sprpriority: 0; ctrl: 0;]
+[StateDef 29109000; type: S; physics: S; anim: 0; sprpriority: 0; ctrl: 0; velset: 0,0;]
 if cond(anim = 5, animTime = 0, anim != 0) {changeAnim{value: 0}}
-if time = 0 {velSet{y: 0}}
-if time = 4 || abs(vel x) < const(movement.stand.friction.threshold) {velSet{x: 0}}
 if !alive {selfstate{value: 5050;}}
 	# failsafe
 if !numhelper(29108191){selfstate{value: 0}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom stand to Crouch
-[StateDef 29109010; type: C; physics: C; anim: 10; ctrl: 0;]
-if time = 0 {velMul{x: .75}}
-if abs(vel x) < const(movement.crouch.friction.threshold) {velSet{x: 0}}
+[StateDef 29109010; type: C; physics: C; anim: 10; ctrl: 0; velset: 0,0;]
 if animTime = 0 {selfstate{value: 29109011}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom crouching
 [StateDef 29109011; type: C; physics: C; anim: 11; sprpriority: 0; ctrl: 0;]
 if anim = 6 && animTime = 0 {changeAnim{value: 11}}
-if abs(vel x) < const(movement.crouch.friction.threshold) {velSet{x: 0}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom crouch to Stand
@@ -35,9 +30,12 @@ if animTime = 0 {selfstate{value: 29109000}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom walk
 [StateDef 29109020; type: S; physics: S; sprpriority: 0; ctrl: 0;]
+let walkback = cond(const(velocity.walk.back.x), const(velocity.walk.back.x), const240p(-2.2));
+let walkfwd = cond(const(velocity.walk.fwd.x), const(velocity.walk.fwd.x), const240p(2.4));
+
 if numhelper(29108191){
-	if command = "holdback" {velSet{x: const(velocity.walk.back.x)}} 
-	else if command = "holdfwd" {velSet{x: const(velocity.walk.fwd.x)}}
+	if command = "holdback" {velSet{x:$walkback}} 
+	else if command = "holdfwd" {velSet{x:$walkfwd}}
 	else {selfstate{value: 29109000}}
 	}
 
@@ -51,32 +49,34 @@ else if vel x < 0 {
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom jump Start
-[StateDef 29109040; type: S; physics: S; anim: 40; sprpriority: 1; facep2: 1; ctrl: 0;]
+[StateDef 29109040; type: S; physics: S; anim: 40; sprpriority: 1; facep2: 1; ctrl: 0; velset: 0,0;]
+let jump = cond(const(velocity.jump.y), const(velocity.jump.y), const240p(-8.4));
+let jumpneu = cond(const(velocity.jump.neu.x), const(velocity.jump.neu.x), 0);
+let jumprun = cond(const(velocity.runjump.fwd.x), const(velocity.runjump.fwd.x), const240p(4));
+let jumpfwd = cond(const(velocity.jump.fwd.x), const(velocity.jump.fwd.x), const240p(2.5));
+let jumpback = cond(const(velocity.jump.back.x), const(velocity.jump.back.x), const240p(-2.55));
+
 if time = 0 {map(io_customjump) := 0;}
 if command = "holdback" {map(io_customjump) := -1;}
 else if command = "holdfwd" {map(io_customjump) := 1;}
 
 if animTime = 0 {
-	if map(io_customjump) = 0 {
-		let x = const(velocity.jump.neu.x);
-	} else if map(io_customjump) = 1 {
-		if prevStateNo = 29109100 {
-			let x = const(velocity.runjump.fwd.x);
-		} else {
-			let x = const(velocity.jump.fwd.x);
-		}
-	} else {
-		let x = const(velocity.jump.back.x);
+	if map(io_customjump) = 0 {let x = $jumpneu;} 
+	else if map(io_customjump) = 1 {
+		if prevStateNo = 29109100 {let x = $jumprun;} 
+		else {let x = $jumpfwd;}
+		} 
+	else {let x = $jumpback;}
+	
+	velSet{x: $x; y: $jump}
+	selfstate{value:50 + numhelper(29108191)*29109000;}
 	}
-	velSet{x: $x; y: const(velocity.jump.y)}
-	selfstate{value: 29109050;}
-}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom jump Up
 [StateDef 29109050; type: A; physics: N; ctrl: 0;]#type: A; physics: A 
 	# accounts for the change in physics
-if numhelper(29108191) {gravity{}}
+if time > 0 {gravity{}}
 
 if time = 0 {
 	map(io_customjump) := 0;
@@ -91,15 +91,10 @@ if time > 0 && vel y > 0 && pos y >= 0 {
 	}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom jump Land
-[StateDef 29109052; type: S; physics: S; anim: 47; ctrl:0;]
-if time = 0 {
-	velSet{y: 0}
-	posSet{y: 0}
-	}
-	
-if abs(vel x) < const(movement.stand.friction.threshold) {velSet{x: 0}}
+[StateDef 29109052; type: S; physics: S; anim: 47; ctrl:0; velset: 0,0;]
+if time = 0 {posSet{y: 0}}
 
-	# manual transition to state 0  
+	# manual transition to state 0, and failsafe
 if animtime = 0 {
 	if !numhelper(29108191) {selfstate{value:0; ctrl:1;}}
 	else {selfstate{value:29109000;}}
@@ -107,30 +102,28 @@ if animtime = 0 {
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom run forward
 [StateDef 29109100; type: S; physics: S; anim: cond(animexist(100),100,20); sprpriority: 1; ctrl: 0;]
+let runfwd = cond(const(velocity.run.fwd.x) != 0, const(velocity.run.fwd.x), const240p(4.6));
 
-velSet{x: const(velocity.run.fwd.x)}
+velSet{x: $runfwd}
 assertSpecial{flag: noWalk; flag2: nocrouch}
 if command != "holdfwd" {selfstate{value: 29109000}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards
 [StateDef 29109105; type: S; physics: N; anim: cond(animexist(105),105,20); sprpriority: 1; ctrl: 0;]
-	# accounts for the change in physics
-gravity{}
+let runbackx = cond(const(velocity.run.back.x) != 0, const(velocity.run.back.x), const240p(-4.5));
 
-if time = 0 {velSet{x: const(velocity.run.back.x); y: const(velocity.run.back.y)}}
+	# accounts for the change in physics
+if time > 0 {gravity{}}
+
+if time = 0 {velSet{x:$runbackx; y:const(velocity.run.back.y);}}
 	# manual landing
 if time > 0 && vel y > 0 && pos y >= 0 {selfstate{value: 29109106}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards (land)
-[StateDef 29109106; type: S; physics: S; anim: 47; ctrl: 0;]
-
-if abs(vel x) < const(movement.stand.friction.threshold) {velSet{x: 0}}
-if time = 0 {
-	velSet{y: 0}
-	posSet{y: 0}
-	} 
+[StateDef 29109106; type: S; physics: S; anim: 47; ctrl: 0; velset: 0,0;]
+if time = 0 {posSet{y: 0}} 
 else if time = 2 {makeDust{pos: 0, 0; spacing: 1}} 
 	# manual transition to state 0  
 if animtime = 0 {
@@ -142,8 +135,10 @@ if animtime = 0 {
 
 	# controls state transitions during the pre-fight state
 if numhelper(29108191) && !ishelper && map(io_pre_fight) {
+
 	# keeps the character anchored to custom states
 	if stateno = 0 {selfstate{value:29109000;}}
+	
 	# faux-control scenarios
 	let f = call faux_control();
 	if $f {
