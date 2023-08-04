@@ -30,21 +30,24 @@ else {destroyself{}}
 	
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef 29108191;anim:-2;]# allows movement during intros
+# emergency killswitch
 if root,ctrl || enemy,ctrl || time > 360 {destroyself{}}
 
 # Negative states start here
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef -2]
+	# not for attachedchars 
+if playerno < 9 {
 
-	# test features
-ignorehitpause {
-	let f = 140;
-	let g = 152;
-	if playerno = 1 {text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}}
-	text{removetime:1; layerno:1; pos:$f,$g+playerno*10;text:"P%v Ctrl = %d    Prev State No  = %i";params:playerno,ctrl,prevstateno;}
-	text{removetime:1; layerno:1; pos:$f+240,$g+playerno*10;text:"State No  = %v";params:stateno;}
-	text{removetime:1; layerno:1; pos:$f+380,$g+playerno*10;text:"Pos = %d,%i ";params:floor(pos x),floor(pos y);}
-	}
+	# debug features, may look off because of font differences.
+#ignorehitpause {
+#	let f = 5;
+#	let g = 48;
+#	if playerno = 1 {text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}}
+#	text{removetime:1; layerno:1; pos:$f,$g+playerno*12;text:"P%v Ctrl = %d   Prev State No  = %i";params:playerno,ctrl,prevstateno;}
+#	text{removetime:1; layerno:1; pos:$f+320,$g+playerno*12;text:"State No  = %v";params:stateno;}
+#	text{removetime:1; layerno:1; pos:$f+490,$g+playerno*12;text:"Pos = %d,%i ";params:floor(pos x),floor(pos y);}
+#	}
 	
 	# manual turning, taken from 2OS
 let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
@@ -52,23 +55,32 @@ ignorehitpause if numhelper(29108191) && ($x0 < -5) && (anim = 0 || anim = 11 ||
 	changeanim{value:5+(anim = 11)}
 	turn{}
 	}
+}
 
 [Statedef -3]
+	# not for attachedchars 
+if playerno < 9 {
 
 	# centers camera on the winner or loser during winposes.
-ignorehitpause if roundstate = 4 && !ishelper && playerno < 3 && ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 {
-	let z = gamewidth/const240p(320/map(io_win_zoo));
-	let bon = 0;
-	if leftedge > 30 || rightedge > 30 {let bon = 1;}
-	zoom{scale:$z;lag:0.97; pos:(pos x/$z)*camerazoom, pos y; stagebound:$bon; camerabound:1;}
+ignorehitpause if roundstate = 4 && !ishelper && playerno < 3 {
+	# disables PotS characters' own zoom.
+	# this is here partially to teach you how to make your roster a bit more homogeneous with a bit of elbow grease, and partially because PotS himself didn't like the idea of his characters's zoom config clashing with this system.
+	if authorname = "Phantom.of.the.Server" && map(cfg_winzoom) {map(cfg_winzoom):= 0;}
+	
+	# zoom zoom
+	if ((map(io_win_cam) = 1 && (winko||wintime)) || (map(io_win_cam) = 2 && (loseko||losetime))) && map(io_win_zoo) > 1 {
+		let z = gamewidth/const240p(320/map(io_win_zoo));
+		zoom{scale:$z;lag:0.97; pos:(pos x/$z)*camerazoom, pos y; stagebound:1; camerabound:0;}
+		}
 	}
-
+}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef -4]
+	# not for attachedchars 
+if playerno < 9 {
 
 	# this is only relevant for external detection
 if stateno = 5900 && !map(ignore_io) {map(foobs_intro_system):= 1;}
-
 
 if !ishelper && map(io_pre_fight){
 	# spawns a helper that lets the character move during the pre-fight state
@@ -126,3 +138,4 @@ ignorehitpause if roundstate = 4 && playerno < 3 && !ishelper && alive {
 	# hides the lifebars during winposes.
 	ignorehitpause if map(io_win_hud) {assertspecial{flag:nobardisplay;}}
 	}
+}

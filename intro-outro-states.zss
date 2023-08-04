@@ -15,7 +15,7 @@ if !numhelper(29108191){selfstate{value: 0}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom stand to Crouch
 [StateDef 29109010; type: C; physics: C; anim: 10; ctrl: 0; velset: 0,0;]
-if animTime = 0 {selfstate{value: 29109011}}
+if animTime = 0 {selfstate{value: 11 + numhelper(29108191)*29109000;}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom crouching
@@ -25,7 +25,7 @@ if anim = 6 && animTime = 0 {changeAnim{value: 11}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom crouch to Stand
 [StateDef 29109012; type: S; physics: S; anim: 12; ctrl: 0;]
-if animTime = 0 {selfstate{value: 29109000}}
+if animTime = 0 {selfstate{value: numhelper(29108191)*29109000;}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom walk
@@ -33,11 +33,10 @@ if animTime = 0 {selfstate{value: 29109000}}
 let walkback = cond(const(velocity.walk.back.x), const(velocity.walk.back.x), const240p(-2.2));
 let walkfwd = cond(const(velocity.walk.fwd.x), const(velocity.walk.fwd.x), const240p(2.4));
 
-if numhelper(29108191){
-	if command = "holdback" {velSet{x:$walkback}} 
-	else if command = "holdfwd" {velSet{x:$walkfwd}}
-	else {selfstate{value: 29109000}}
-	}
+if command = "holdback" {velSet{x:$walkback}} 
+else if command = "holdfwd" {velSet{x:$walkfwd}}
+else {selfstate{value: numhelper(29108191)*29109000;}}
+
 
 if vel x > 0 {
 	if cond(anim = 5, animTime = 0, anim != 20) {changeAnim{value: 20}}
@@ -85,20 +84,18 @@ if time = 0 {
 persistent(0) if vel y > const240p(-2) && selfAnimExist(anim + 3) && anim = [41, 43] {changeAnim{value: anim + 3}}
 
 	# manual landing
-if time > 0 && vel y > 0 && pos y >= 0 {
-	if !numhelper(29108191) {selfstate{value:52;}}
-	else {selfstate{value:29109052;}}
-	}
+if time > 0 && vel y > 0 && pos y >= 0 {selfstate{value:52 + numhelper(29108191)*29109000;}}
+
+	# give control if the intro state ends while still in midair 
+if !numhelper(29108191) {ctrlset{value:1;}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom jump Land
 [StateDef 29109052; type: S; physics: S; anim: 47; ctrl:0; velset: 0,0;]
 if time = 0 {posSet{y: 0}}
 
 	# manual transition to state 0, and failsafe
-if animtime = 0 {
-	if !numhelper(29108191) {selfstate{value:0; ctrl:1;}}
-	else {selfstate{value:29109000;}}
-	}
+if animtime = 0 { selfstate{value: numhelper(29108191)*29109000;}}
+
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom run forward
 [StateDef 29109100; type: S; physics: S; anim: cond(animexist(100),100,20); sprpriority: 1; ctrl: 0;]
@@ -106,7 +103,7 @@ let runfwd = cond(const(velocity.run.fwd.x) != 0, const(velocity.run.fwd.x), con
 
 velSet{x: $runfwd}
 assertSpecial{flag: noWalk; flag2: nocrouch}
-if command != "holdfwd" {selfstate{value: 29109000}}
+if command != "holdfwd" {selfstate{value: numhelper(29108191)*29109000;}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards
@@ -117,8 +114,9 @@ let runbackx = cond(const(velocity.run.back.x) != 0, const(velocity.run.back.x),
 if time > 0 {gravity{}}
 
 if time = 0 {velSet{x:$runbackx; y:const(velocity.run.back.y);}}
+
 	# manual landing
-if time > 0 && vel y > 0 && pos y >= 0 {selfstate{value: 29109106}}
+if time > 0 && vel y > 0 && pos y >= 0 {selfstate{value: 106 + numhelper(29108191)*29109000;}}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards (land)
@@ -128,7 +126,7 @@ else if time = 2 {makeDust{pos: 0, 0; spacing: 1}}
 	# manual transition to state 0  
 if animtime = 0 {
 	if !numhelper(29108191) {selfstate{value:0; ctrl:1;}}
-	else {selfstate{value:29109000;}}
+	else {selfstate{value: numhelper(29108191)*29109000;}}
 	}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef -1]
@@ -164,7 +162,7 @@ if !numhelper(29108191) && !ishelper && stateno = [29109000,29109106] {
 	# running
 	else if stateno = 29109100 {selfstate{value:100; ctrl:1;}}
 	# Jumping
-	else if stateno = 29109050 {selfstate{value:50; ctrl:1;}}
+	#else if stateno = 29109050 {selfstate{value:50; ctrl:1;}}
 	# walking
 	else if stateno = 29109020 {selfstate{value:20; ctrl:1;}}
 	# standing

@@ -1,0 +1,9 @@
+[Command]
+name = "FF"
+command = ~F, F
+time = 8
+
+[Command]
+name = "BB"
+command = ~B, B
+time = 8
