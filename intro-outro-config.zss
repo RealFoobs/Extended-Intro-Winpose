@@ -24,7 +24,7 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
 	# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
 
-	map(io_pow_r1) := 1000;
+	map(io_pow_r1) := 0;
 	map(io_pow_wi) := 0;
 	map(io_pow_lo) := 0;
 	map(io_pow_tm) := 0;

@@ -31,7 +31,7 @@ else {destroyself{}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef 29108191;anim:-2;]# allows movement during intros
 # emergency killswitch
-if root,ctrl || enemy,ctrl || time > 360 {destroyself{}}
+if root,ctrl || enemy,ctrl {destroyself{}}
 
 # Negative states start here
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -63,8 +63,7 @@ if playerno < 9 {
 
 	# centers camera on the winner or loser during winposes.
 ignorehitpause if roundstate = 4 && !ishelper && playerno < 3 {
-	# disables PotS characters' own zoom.
-	# this is here partially to teach you how to make your roster a bit more homogeneous with a bit of elbow grease, and partially because PotS himself didn't like the idea of his characters's zoom config clashing with this system.
+	# disables PotS characters' own zoom
 	if authorname = "Phantom.of.the.Server" && map(cfg_winzoom) {map(cfg_winzoom):= 0;}
 	
 	# zoom zoom

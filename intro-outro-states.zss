@@ -1,31 +1,38 @@
 [function faux_control()f]
 let f = 0;
-if (stateno = 5900 && roundno > 1 && !isasserted(intro)) ||stateno = 29109000 || (stateno = 29109052 && (time = 3 || animtime = 0)) || (stateno = 29109106 && time = 7) {
-	let f = 1;
-	}
+if (stateno = 5900 && roundno > 1 && !isasserted(intro)) ||stateno = 29109000 || (stateno = 29109052 && (time = 3 || animtime = 0)) || (stateno = 29109106 && time = 7) {let f = 1;}
+
+[function real_control()]
+if !numhelper(29108191) {ctrlset{value:1}}
+
+[function transition(f)]
+selfstate{value: $f + numhelper(29108191)*29109000;}
+
 
 # Custom states start here
-#-------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom stand
 [StateDef 29109000; type: S; physics: S; anim: 0; sprpriority: 0; ctrl: 0; velset: 0,0;]
 if cond(anim = 5, animTime = 0, anim != 0) {changeAnim{value: 0}}
 if !alive {selfstate{value: 5050;}}
-	# failsafe
-if !numhelper(29108191){selfstate{value: 0}}
+call real_control();
+
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom stand to Crouch
 [StateDef 29109010; type: C; physics: C; anim: 10; ctrl: 0; velset: 0,0;]
-if animTime = 0 {selfstate{value: 11 + numhelper(29108191)*29109000;}}
+if animTime = 0 {call transition(11);}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom crouching
 [StateDef 29109011; type: C; physics: C; anim: 11; sprpriority: 0; ctrl: 0;]
 if anim = 6 && animTime = 0 {changeAnim{value: 11}}
+if command != "holddown" {call transition(12);}
+call real_control();
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom crouch to Stand
 [StateDef 29109012; type: S; physics: S; anim: 12; ctrl: 0;]
-if animTime = 0 {selfstate{value: numhelper(29108191)*29109000;}}
+if animTime = 0 {call transition(0);}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom walk
@@ -35,16 +42,11 @@ let walkfwd = cond(const(velocity.walk.fwd.x), const(velocity.walk.fwd.x), const
 
 if command = "holdback" {velSet{x:$walkback}} 
 else if command = "holdfwd" {velSet{x:$walkfwd}}
-else {selfstate{value: numhelper(29108191)*29109000;}}
+else {call transition(0);}
 
-
-if vel x > 0 {
-	if cond(anim = 5, animTime = 0, anim != 20) {changeAnim{value: 20}}
-	}
-else if vel x < 0 {
-	if cond(anim = 5, animTime = 0, anim != 21) {changeAnim{value: 21}}
-	}
-
+if vel x > 0 {if cond(anim = 5, animTime = 0, anim != 20) {changeAnim{value: 20;}}}
+else if vel x < 0 {if cond(anim = 5, animTime = 0, anim != 21) {changeAnim{value: 21;}}}
+call real_control();
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom jump Start
@@ -64,11 +66,11 @@ if animTime = 0 {
 	else if map(io_customjump) = 1 {
 		if prevStateNo = 29109100 {let x = $jumprun;} 
 		else {let x = $jumpfwd;}
-		} 
+		}
 	else {let x = $jumpback;}
 	
 	velSet{x: $x; y: $jump}
-	selfstate{value:50 + numhelper(29108191)*29109000;}
+	call transition(50);
 	}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -76,7 +78,6 @@ if animTime = 0 {
 [StateDef 29109050; type: A; physics: N; ctrl: 0;]#type: A; physics: A 
 	# accounts for the change in physics
 if time > 0 {gravity{}}
-
 if time = 0 {
 	map(io_customjump) := 0;
 	changeAnim{value: cond(vel x = 0, 41, ifElse(vel x > 0, 42, 43))}
@@ -85,16 +86,14 @@ persistent(0) if vel y > const240p(-2) && selfAnimExist(anim + 3) && anim = [41,
 
 	# manual landing
 if time > 0 && vel y > 0 && pos y >= 0 {selfstate{value:52 + numhelper(29108191)*29109000;}}
+call real_control();
 
-	# give control if the intro state ends while still in midair 
-if !numhelper(29108191) {ctrlset{value:1;}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom jump Land
 [StateDef 29109052; type: S; physics: S; anim: 47; ctrl:0; velset: 0,0;]
 if time = 0 {posSet{y: 0}}
-
 	# manual transition to state 0, and failsafe
-if animtime = 0 { selfstate{value: numhelper(29108191)*29109000;}}
+if animtime = 0 {call transition(0);}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom run forward
@@ -103,7 +102,8 @@ let runfwd = cond(const(velocity.run.fwd.x) != 0, const(velocity.run.fwd.x), con
 
 velSet{x: $runfwd}
 assertSpecial{flag: noWalk; flag2: nocrouch}
-if command != "holdfwd" {selfstate{value: numhelper(29108191)*29109000;}}
+if command != "holdfwd" {call transition(0);}
+call real_control();
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards
@@ -112,22 +112,17 @@ let runbackx = cond(const(velocity.run.back.x) != 0, const(velocity.run.back.x),
 
 	# accounts for the change in physics
 if time > 0 {gravity{}}
-
 if time = 0 {velSet{x:$runbackx; y:const(velocity.run.back.y);}}
-
 	# manual landing
-if time > 0 && vel y > 0 && pos y >= 0 {selfstate{value: 106 + numhelper(29108191)*29109000;}}
+if time > 0 && vel y > 0 && pos y >= 0 {call transition(106);}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards (land)
 [StateDef 29109106; type: S; physics: S; anim: 47; ctrl: 0; velset: 0,0;]
 if time = 0 {posSet{y: 0}} 
-else if time = 2 {makeDust{pos: 0, 0; spacing: 1}} 
-	# manual transition to state 0  
-if animtime = 0 {
-	if !numhelper(29108191) {selfstate{value:0; ctrl:1;}}
-	else {selfstate{value: numhelper(29108191)*29109000;}}
-	}
+else if time = 2 {makeDust{pos: 0, 0; spacing: 1}}
+if animtime = 0 {call transition(0);}
+
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef -1]
 
@@ -151,22 +146,4 @@ if numhelper(29108191) && !ishelper && map(io_pre_fight) {
 	if ($f || stateno = 29109020) && command = "holddown"{selfstate{value:29109010}}	
 	# jump
 	if ($f || stateno = 29109020 || stateno = 29109100) && command = "holdup"{selfstate{value:29109040}}
-	# crouch to stand
-	if stateno = 29109011 && command != "holddown"{selfstate{value:29109012}}
 	}
-
-	# transitions as smoothly as possible into regular states
-if !numhelper(29108191) && !ishelper && stateno = [29109000,29109106] {
-	# crouching states
-	if statetype = C {selfstate{value:11; ctrl:1;}}
-	# running
-	else if stateno = 29109100 {selfstate{value:100; ctrl:1;}}
-	# Jumping
-	#else if stateno = 29109050 {selfstate{value:50; ctrl:1;}}
-	# walking
-	else if stateno = 29109020 {selfstate{value:20; ctrl:1;}}
-	# standing
-	else if stateno = 29109000 {selfstate{value:0; ctrl:1;}}
-	}
-	
-#--------------------------------------------------------------------------------------------------------------------------------------------------------
