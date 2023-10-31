@@ -31,31 +31,32 @@ else {destroyself{}}
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef 29108191;anim:-2;]# allows movement during intros
 # emergency killswitch
-if root,ctrl || enemy,ctrl {destroyself{}}
+if roundstate > 0 && (root,ctrl || enemy,ctrl) {destroyself{}}
 
 # Negative states start here
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 [Statedef -2]
 	# not for attachedchars 
-if playerno < 9 {
+ignorehitpause if playerno < 9 {
 
 	# debug features, may look off because of font differences.
-#ignorehitpause {
-#	let f = 5;
+#	let f = 2;
 #	let g = 48;
+	
 #	if playerno = 1 {text{removetime:1; layerno:1; pos:$f,$g;text:"Roundstate %d";params:roundstate;}}
 #	text{removetime:1; layerno:1; pos:$f,$g+playerno*12;text:"P%v Ctrl = %d   Prev State No  = %i";params:playerno,ctrl,prevstateno;}
 #	text{removetime:1; layerno:1; pos:$f+320,$g+playerno*12;text:"State No  = %v";params:stateno;}
 #	text{removetime:1; layerno:1; pos:$f+490,$g+playerno*12;text:"Pos = %d,%i ";params:floor(pos x),floor(pos y);}
-#	}
-	
+#	if isasserted(intro) {text{removetime:1; layerno:1; pos:$f+620,$g+playerno*12;text:"Intro"}}
+
 	# manual turning, taken from 2OS
-let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
-ignorehitpause if numhelper(29108191) && ($x0 < -5) && (anim = 0 || anim = 11 || anim = 20) {
-	changeanim{value:5+(anim = 11)}
-	turn{}
+	let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
+
+	if stateno = [29109000,29109106] && ($x0 < -5) && (anim = 0 || anim = 11 || anim = 20) {
+		changeanim{value:5+(anim = 11)}
+		turn{}
+		}
 	}
-}
 
 [Statedef -3]
 	# not for attachedchars 

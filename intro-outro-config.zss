@@ -5,7 +5,7 @@
 # ignore_io = 1
 
 # This will turn all of the switches off. 
-# If you want to re-enable any specific of the features, copy its name = 1 on the same section of the def; e.g.:
+# If you want to re-enable any specific feature, copy its name = 1 on the same section of the def; e.g.:
 
 # [Map]
 # ignore_io = 1
@@ -14,15 +14,18 @@
 [Statedef -2]
 
 if !map(ignore_io) && stateno = 5900 && playerno < 9 {
+	
+	# io_pre_fight controls if the characters can move between the intro and start of the round stateno: 1 to allow movement, 0 to keep the characters static.
+	map(io_pre_fight) := 0;
 
 	# io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
-	map(io_intro_skip) := 1;
+	map(io_intro_skip) := 0;
 
-	# io_pow_r1 controls how much power the character gain at the beginning of round one: default is 0.
-	# io_pow_wi controls how much power the character gain after winning a fight in single, simul, or tag mode: default is 0.
-	# io_pow_lo controls how much power the character gain after losing a fight in single, simul, or tag mode: default is 0.
-	# io_pow_tm controls how much power the character gain after losing a partner in turns mode: default is 0.
+	# io_pow_r1 controls how much power the characters gain at the beginning of round one: default is 0.
+	# io_pow_wi controls how much power the characters gain after winning a fight in single, simul, or tag mode: default is 0.
+	# io_pow_lo controls how much power the characters gain after losing a fight in single, simul, or tag mode: default is 0.
+	# io_pow_tm controls how much power the characters gain after losing a partner in turns mode: default is 0.
 
 	map(io_pow_r1) := 0;
 	map(io_pow_wi) := 0;
@@ -39,7 +42,7 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	# "io_intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 1 to hide them, and 0 to keep them on.
 	# "io_intro_hud_rx" controls the lifebars when a new character jumps in on turns mode: 1 to hide them, and 0 to keep them on.
 
-	map(io_intro_hud_r1) := 1;
+	map(io_intro_hud_r1) := 0;
 	map(io_intro_hud_rx) := 0;
 	map(io_intro_hud_tm) := 0;
 	
@@ -57,26 +60,26 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	# "io_ko_bgm" controls the background music immediately after a character is KO'd: 1 to mute it, and 0 to keep it on.
 	# "io_ko_hud" controls the lifebars immediately after a character is KO'd: 1 to hide them, and 0 to keep them on.
 
-	map(io_ko_bgm) := 1;
-	map(io_ko_hud) := 1;
-
-	# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
-
-	map(io_win_skip) := 0;
+	map(io_ko_bgm) := 0;
+	map(io_ko_hud) := 0;
 	
 	# "io_win_bgm" controls the background music during winposes: 1 to mute it, and 0 to keep it on.
 	# "io_win_hud" controls the lifebars during winposes: 1 to hide them, and 0 to keep them on.
 
-	map(io_win_bgm) := 1;
-	map(io_win_hud) := 1;
+	map(io_win_bgm) := 0;
+	map(io_win_hud) := 0;
 	
 	# "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
 	# "io_win_zoo" determines how much the camera will zoom at the end of the fight. Default is 1, higher numbers = more zoom.
 
-	map(io_win_cam) := 1;
+	map(io_win_cam) := 0;
 	map(io_win_zoo) := 1.25;
 	
-	# io_pre_fight controls if the characters can move between the intro and start of the round stateno: 1 to allow movement, 0 to keep the characters static.
-	map(io_pre_fight) := 1;
+	# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
+
+	map(io_win_skip) := 0;
+	
+	
+	
 	
 	}
