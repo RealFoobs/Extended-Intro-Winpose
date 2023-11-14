@@ -9,6 +9,12 @@
 3. Near the beginning of the file you should see a block like this:
 
 ```
+  "CommonCmd": [
+    "data/common.cmd"
+  ],
+```
+Followed by this
+```
 	"CommonStates": [
 		"data/action.zss",
 		"data/dizzy.zss",
@@ -18,8 +24,15 @@
 		"data/training.zss"
 	],
 ```
-You just need to add `"data/intro-outro.zss"` and `"data/intro-outro-config.zss"` so the engine can read the files.
+You just need to add my files so the engine can read them:
 
+
+```
+  "CommonCmd": [
+    "data/common.cmd",
+    "data/intro_outro_commands.cns"
+  ],
+```
 ```
 	"CommonStates": [
 		"data/action.zss",
@@ -29,6 +42,7 @@ You just need to add `"data/intro-outro.zss"` and `"data/intro-outro-config.zss"
 		"data/tag.zss",
 		"data/intro-outro.zss",
 		"data/intro-outro-config.zss",
+    		"data/intro-outro-states.zss",
 		"data/training.zss"
 	],
   ```
