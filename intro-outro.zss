@@ -50,8 +50,9 @@ ignorehitpause if playerno < 9 {
 #	if isasserted(intro) {text{removetime:1; layerno:1; pos:$f+620,$g+playerno*12;text:"Intro"}}
 
 	# manual turning, taken from 2OS
-	let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
-
+	#let x0 = ceil(enemynear((numenemy=2)*(enemynear,stateno=5150)),pos x-pos x)*facing;
+	let x0 = ceil(p2,pos x - pos x)*facing;
+	
 	if stateno = [29109000,29109106] && ($x0 < -5) && (anim = 0 || anim = 11 || anim = 20) {
 		changeanim{value:5+(anim = 11)}
 		turn{}

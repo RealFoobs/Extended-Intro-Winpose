@@ -7,3 +7,23 @@ time = 8
 name = "BB"
 command = ~B, B
 time = 8
+
+[Command]
+name = "holdfwd"
+command = /$F
+time = 1
+
+[Command]
+name = "holdback"
+command = /$B
+time = 1
+
+[Command]
+name = "holdup"
+command = /$U
+time = 1
+
+[Command]
+name = "holddown"
+command = /$D
+time = 1

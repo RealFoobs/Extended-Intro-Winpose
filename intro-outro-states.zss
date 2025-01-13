@@ -41,8 +41,7 @@ let walkback = cond(const(velocity.walk.back.x), const(velocity.walk.back.x), co
 let walkfwd = cond(const(velocity.walk.fwd.x), const(velocity.walk.fwd.x), const240p(2.4));
 
 if command = "holdback" {velSet{x:$walkback}} 
-else if command = "holdfwd" || (ailevel && p2bodydist x > const240p(40)) {velSet{x:$walkfwd}}
-else if (ailevel && p2bodydist x > const240p(65)) {call transition(100);}
+else if command = "holdfwd" {velSet{x:$walkfwd}}
 else {call transition(0);}
 
 if vel x > 0 {if cond(anim = 5, animTime = 0, anim != 20) {changeAnim{value: 20;}}}
@@ -103,20 +102,20 @@ let runfwd = cond(const(velocity.run.fwd.x) != 0, const(velocity.run.fwd.x), con
 
 velSet{x: $runfwd}
 assertSpecial{flag: noWalk; flag2: nocrouch}
-if !ailevel && command != "holdfwd" {call transition(0);}
-else if ailevel && abs(p2bodydist x) < 60 {call transition(20);}
+if command != "holdfwd" {call transition(0);}
 call real_control();
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards
 [StateDef 29109105; type: S; physics: N; anim: cond(animexist(105),105,20); sprpriority: 1; ctrl: 0;]
 let runbackx = cond(const(velocity.run.back.x) != 0, const(velocity.run.back.x), const240p(-4.5));
+let runbacky = cond(const(velocity.run.back.y) != 0, const(velocity.run.back.y), const240p(-3.8));
 
 	# accounts for the change in physics
+if time = 0 {velSet{x:$runbackx; y:$runbacky}}
 if time > 0 {gravity{}}
-if time = 0 {velSet{x:$runbackx; y:const(velocity.run.back.y);}}
 	# manual landing
-if time > 0 && vel y > 0 && pos y >= 0 {call transition(106);}
+if vel y > 0 && pos y >= 0 {call transition(106);}
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 # Custom hop backwards (land)
@@ -148,17 +147,28 @@ if numhelper(29108191) && !ishelper && map(io_pre_fight) {
 	# crouch
 	if ($f || stateno = 29109020) && command = "holddown"{selfstate{value:29109010}}	
 	# jump
-	if ($f || stateno = 29109020 || stateno = 29109100) && command = "holdup"{selfstate{value:29109040}}
+	if ($f || stateno = 29109020 || stateno = 29109100 || stateno = [29109010,29109012]) && command = "holdup"{selfstate{value:29109040}}
 	
+	}
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+[Statedef -4]
+
+if ailevel {
 	# AI commands
 	
-	let g = abs(p2bodydist x);
+	let f = call faux_control();	
+	let g = p2bodydist x;
 	
-	if $f && ailevel {
+	if ($f || stateno = 29109020 || stateno = 29109100) {
+	# hold forward
+		if $g > const240p(50) {assertcommand{name:"holdfwd"; buffer.time:1;}}
 	# run
-		if $g > const240p(110) && stateno != 29109100 {selfstate{value:29109100}}
-	# walk
-		if $g = [const240p(70),const240p(110)] && stateno != 29109020 {selfstate{value:29109020}}
+		if $g > const240p(100) && stateno != 29109100 {selfstate{value:29109100}}
+	# jump out of the corner
+		if $f && backedgedist < const240p(50) {
+			assertcommand{name:"holdfwd"; buffer.time:1;}
+			assertcommand{name:"holdup"; buffer.time:1;}
+			}
 		}
 	}
-	

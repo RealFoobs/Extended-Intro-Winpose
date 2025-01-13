@@ -11,23 +11,23 @@
 # ignore_io = 1
 # io_intro_bgm_tm = 1
 
-[Statedef -2]
+[Statedef -4]
 
-if !map(ignore_io) && stateno = 5900 && playerno < 9 {
+if !ishelper && !map(ignore_io) && stateno = 5900 && teamside {
 	
 	# io_pre_fight controls if the characters can move between the intro and start of the round stateno: 1 to allow movement, 0 to keep the characters static.
-	map(io_pre_fight) := 0;
+	map(io_pre_fight) := 1;
 
 	# io_intro_skip controls if the players can skip intros by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
 
-	map(io_intro_skip) := 0;
+	map(io_intro_skip) := 1;
 
 	# io_pow_r1 controls how much power the characters gain at the beginning of round one: default is 0.
 	# io_pow_wi controls how much power the characters gain after winning a fight in single, simul, or tag mode: default is 0.
 	# io_pow_lo controls how much power the characters gain after losing a fight in single, simul, or tag mode: default is 0.
 	# io_pow_tm controls how much power the characters gain after losing a partner in turns mode: default is 0.
 
-	map(io_pow_r1) := 0;
+	map(io_pow_r1) := 1000;
 	map(io_pow_wi) := 0;
 	map(io_pow_lo) := 0;
 	map(io_pow_tm) := 0;
@@ -42,7 +42,7 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	# "io_intro_hud_rx" controls the lifebars before the fight starts on subsequent rounds: 1 to hide them, and 0 to keep them on.
 	# "io_intro_hud_rx" controls the lifebars when a new character jumps in on turns mode: 1 to hide them, and 0 to keep them on.
 
-	map(io_intro_hud_r1) := 0;
+	map(io_intro_hud_r1) := 1;
 	map(io_intro_hud_rx) := 0;
 	map(io_intro_hud_tm) := 0;
 	
@@ -72,7 +72,7 @@ if !map(ignore_io) && stateno = 5900 && playerno < 9 {
 	# "io_win_cam" controls the camera at the end of the fight: 1 to center on the winner, 2 to center on the loser, 0 to keep static. 
 	# "io_win_zoo" determines how much the camera will zoom at the end of the fight. Default is 1, higher numbers = more zoom.
 
-	map(io_win_cam) := 0;
+	map(io_win_cam) := 1;
 	map(io_win_zoo) := 1.25;
 	
 	# io_win_skip controls if the players can skip winposes by tapping buttons: 1 to disable it, and 0 to keep them skippable. 
